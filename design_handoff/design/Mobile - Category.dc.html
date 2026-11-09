@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"><style>body{margin:0;background:#E3E8E6;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#16211F;-webkit-font-smoothing:antialiased}a{color:#0E5E52;text-decoration:none}a:hover{color:#0B4D43}*{box-sizing:border-box}input,button,textarea{font-family:inherit}</style></helmet>
+<div data-screen-label="Mobile Category" style="width:100%;max-width:390px;min-height:100vh;margin:0 auto;background:#F6F8F7;display:flex;flex-direction:column">
+  <sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}"><dc-import name="StatusBlock" kind="{{ status }}" layout="grid" platform="m" nf-title="Category not found" on-retry="{{ retry }}" hint-size="100%,640px"></dc-import></sc-if>
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+  <div style="background-color:{{ k.tint }};background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.35) 0 12px,transparent 12px 24px)">
+    <div style="height:50px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #16211F;border-radius:3px"></span></div>
+    <div style="padding:4px 20px 28px;display:flex;flex-direction:column;gap:10px">
+      <a href="Mobile - Home.dc.html" style="font-size:22px;color:#16211F;width:44px;height:44px;display:flex;align-items:center" style-active="opacity:.7">←</a>
+      <span style="font-size:30px;font-weight:800;letter-spacing:-.02em;color:{{ k.fg }}">{{ k.name }}</span>
+      <span style="font-size:15px;line-height:1.55;color:#2E3A38">{{ k.desc }}</span>
+      <span style="font-size:13px;font-weight:700">{{ countLabel }}</span>
+    </div>
+  </div>
+  <div style="flex:1;padding:20px 20px 28px;display:flex;flex-direction:column;gap:12px">
+    <sc-for list="{{ courses }}" as="c" hint-placeholder-count="2">
+      <div style="position:relative;background:#fff;border:1px solid #E3E8E6;border-radius:14px;overflow:hidden">
+        <a href="{{ c.href }}" style="display:flex;flex-direction:column;color:#16211F" style-active="opacity:.7">
+          <span style="height:130px;background-color:{{ c.tint }};background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.4) 0 10px,transparent 10px 20px);padding:12px"><span style="padding:5px 10px;border-radius:999px;background:#fff;color:{{ c.fg }};font-size:12px;font-weight:700">{{ c.type }}</span></span>
+          <span style="padding:14px;display:flex;flex-direction:column;gap:6px"><span style="font-size:16px;font-weight:700;line-height:1.35">{{ c.title }}</span><span style="font-size:13px;line-height:1.5;color:#4A5856">{{ c.desc }}</span><span style="font-size:12px;font-weight:600;color:#4A5856">{{ c.level }} · {{ c.dur }} · ★ {{ c.rating }}</span></span>
+        </a>
+        <button onClick="{{ c.toggle }}" title="{{ c.favLabel }}" style="position:absolute;top:8px;right:8px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;display:flex;align-items:center;justify-content:center" style-active="opacity:.7"><svg width="18" height="18" viewBox="0 0 24 24" fill="{{ c.favFill }}" stroke="{{ c.favStroke }}" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg></button>
+      </div>
+    </sc-for>
+    <span style="font-size:16px;font-weight:700;margin-top:12px">Other categories</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <sc-for list="{{ others }}" as="o" hint-placeholder-count="3"><a href="{{ o.href }}" style="height:40px;padding:0 14px;border-radius:999px;background:#fff;border:1px solid #E3E8E6;color:#16211F;font-size:13px;font-weight:600;display:flex;align-items:center" style-active="opacity:.7">{{ o.name }}</a></sc-for>
+    </div>
+  </div>
+  </sc-if>
+  <dc-import name="MobileTabBar" active="home" hint-size="100%,84px" style="position:sticky;bottom:0;z-index:10"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { D: null, favs: null };
+  componentDidMount() {
+    this.boot = () => import(new URL('sl-data.js', location.href).href).then(D => { this.setState({ D, favs: D.getFavs(), status: 'loading' }); return D.load().then(() => this.setState({ status: 'ready' }), () => this.setState({ status: 'error' })); });
+    this.boot();
+    window.addEventListener('hashchange', () => { this.setState({ status: 'loading' }); this.boot(); window.scrollTo(0, 0); });
+  }
+  renderVals() {
+    const st = this.state.status || 'loading';
+    const base = { status: st, ready: st === 'ready', notReady: st !== 'ready', retry: () => { this.setState({ status: 'loading' }); this.boot(); } };
+    if (st !== 'ready' || !this.state.D) return base;
+    const v = this.vals();
+    if (v.__notfound) return { ...base, status: 'notfound', ready: false, notReady: true };
+    return { ...base, ...v };
+  }
+  vals() {
+    const D = this.state.D;
+    if (D.param('c') && !D.findCat(D.param('c'))) return { __notfound: true };
+    const k = D.cat(D.param('c')), set = (f) => this.setState({ favs: f });
+    const list = D.COURSES.filter(c => c.cat === k.id).map(c => D.card('m', c, this.state.favs, set));
+    return { k, courses: list, countLabel: list.length + ' courses',
+      others: D.CATS.filter(o => o.id !== k.id).map(o => ({ name: o.name, href: D.page('m', 'Category', 'c=' + o.id) })) };
+  }
+}
+</script>
+</body>
+</html>

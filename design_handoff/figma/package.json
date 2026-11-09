@@ -1,0 +1,13 @@
+{
+  "name": "skilllearn-figma-export",
+  "private": true,
+  "type": "module",
+  "description": "Captures every SkillLearn screen/state as PNG for the Figma importer plugin.",
+  "scripts": {
+    "capture": "node capture.mjs",
+    "serve": "node capture.mjs --serve"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"><style>body{margin:0;background:#F6F8F7;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#16211F;-webkit-font-smoothing:antialiased}a{color:#0E5E52;text-decoration:none}a:hover{color:#0B4D43}*{box-sizing:border-box}input,button,textarea{font-family:inherit}</style></helmet>
+<div data-screen-label="Web Home" style="min-height:100vh;background:#F6F8F7">
+  <dc-import name="WebNav" active="home" hint-size="100%,68px" style="position:sticky;top:0;z-index:10"></dc-import>
+  <sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}"><dc-import name="StatusBlock" kind="{{ status }}" layout="grid" platform="web" on-retry="{{ retry }}" hint-size="100%,640px"></dc-import></sc-if>
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+  <div style="max-width:1200px;margin:0 auto;padding:36px 40px 64px;display:flex;flex-direction:column;gap:40px">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,440px);gap:24px">
+      <div style="display:flex;flex-direction:column;justify-content:center;gap:10px">
+        <div style="font-size:34px;font-weight:800;letter-spacing:-.02em">{{ greeting }}</div>
+        <div style="font-size:16px;color:#4A5856">{{ sub }}</div>
+      </div>
+      <sc-if value="{{ isNew }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#FBF3DF;border:1px solid #F0E2B8;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px">
+        <div style="font:500 11px 'JetBrains Mono',monospace;color:#7A5510;letter-spacing:.08em">GET STARTED</div>
+        <div style="font-size:18px;font-weight:700">Start your first course</div>
+        <div style="font-size:13px;line-height:1.5;color:#5E420C">React Fundamentals is a good first pick: 12 short lessons for beginners.</div>
+        <a href="Web - Course Detail.dc.html#c=react" style="align-self:flex-start;height:38px;padding:0 16px;border-radius:9px;background:#0E5E52;color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#0B4D43">Start course</a>
+      </div>
+      </sc-if>
+      <sc-if value="{{ isReturning }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#0E5E52;color:#fff;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px">
+        <div style="font:500 11px 'JetBrains Mono',monospace;color:#CFE6E0;letter-spacing:.08em">CONTINUE LEARNING</div>
+        <div style="font-size:18px;font-weight:700">React Fundamentals</div>
+        <div style="font-size:13px;color:#CFE6E0">Next: Lesson 3 · Components &amp; props (14 min)</div>
+        <div style="display:flex;align-items:center;gap:12px"><div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.2)"><div style="width:64%;height:6px;border-radius:3px;background:#F2A93B"></div></div><span style="font-size:13px;font-weight:700">64%</span></div>
+        <a href="Web - Course Detail.dc.html#c=react" style="align-self:flex-start;height:38px;padding:0 16px;border-radius:9px;background:#fff;color:#0E5E52;font-size:14px;font-weight:700;display:flex;align-items:center">Resume</a>
+      </div>
+      </sc-if>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="font-size:22px;font-weight:700;letter-spacing:-.01em">Categories</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px">
+        <sc-for list="{{ cats }}" as="k" hint-placeholder-count="4">
+          <a href="{{ k.href }}" style="background:#fff;border:1px solid #E3E8E6;border-radius:14px;padding:18px;display:flex;align-items:center;gap:14px;color:#16211F;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="border-color:#0E5E52;box-shadow:0 4px 14px rgba(14,94,82,.08)">
+            <span style="width:44px;height:44px;flex:none;border-radius:12px;background-color:{{ k.tint }};background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.45) 0 6px,transparent 6px 12px)"></span>
+            <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700">{{ k.name }}</span><span style="font-size:13px;color:#4A5856">{{ k.count }}</span></span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:22px;font-weight:700;letter-spacing:-.01em">Popular courses</div><a href="Web - Search.dc.html" style="font-size:14px;font-weight:700">See all</a></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px">
+        <sc-for list="{{ courses }}" as="c" hint-placeholder-count="8">
+          <div style="position:relative;background:#fff;border:1px solid #E3E8E6;border-radius:14px;overflow:hidden;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="border-color:#9FC5BC;box-shadow:0 8px 24px rgba(14,94,82,.10);transform:translateY(-2px)">
+            <a href="{{ c.href }}" style="display:flex;flex-direction:column;color:#16211F">
+              <div style="height:150px;background-color:{{ c.tint }};background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.4) 0 10px,transparent 10px 20px);padding:12px"><span style="padding:5px 10px;border-radius:999px;background:#fff;color:{{ c.fg }};font-size:12px;font-weight:700">{{ c.catName }}</span></div>
+              <div style="padding:16px;display:flex;flex-direction:column;gap:8px">
+                <div style="font-size:16px;font-weight:700;line-height:1.35;text-wrap:pretty">{{ c.title }}</div>
+                <div style="font-size:13px;color:#4A5856">{{ c.meta }}</div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px"><span style="font-weight:600;color:#4A5856">{{ c.level }}</span><span style="font-weight:700">★ {{ c.rating }}</span></div>
+              </div>
+            </a>
+            <button onClick="{{ c.toggle }}" title="{{ c.favLabel }}" style="position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#E7F3F0"><svg width="16" height="16" viewBox="0 0 24 24" fill="{{ c.favFill }}" stroke="{{ c.favStroke }}" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg></button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { D: null, favs: null };
+  componentDidMount() { this.boot = () => import(new URL('sl-data.js', location.href).href).then(D => { this.setState({ D, favs: D.getFavs(), status: 'loading' }); return D.load().then(() => this.setState({ status: 'ready' }), () => this.setState({ status: 'error' })); });
+    this.boot(); }
+  renderVals() {
+    const st = this.state.status || 'loading';
+    const base = { status: st, ready: st === 'ready', notReady: st !== 'ready', retry: () => { this.setState({ status: 'loading' }); this.boot(); } };
+    if (st !== 'ready' || !this.state.D) return base;
+    const v = this.vals();
+    if (v.__notfound) return { ...base, status: 'notfound', ready: false, notReady: true };
+    return { ...base, ...v };
+  }
+  vals() {
+    const D = this.state.D; if (!D) return {};
+    const favs = this.state.favs, set = (f) => this.setState({ favs: f }), u = D.getUser();
+    return {
+      greeting: 'Good morning, ' + D.firstName(u.name), isNew: !!u.isNew, isReturning: !u.isNew,
+      sub: u.isNew ? 'Your account is ready. Pick a course to get started.' : 'You have 2 courses in progress. Keep your streak going.',
+      cats: D.CATS.map(k => ({ ...k, href: D.page('web', 'Category', 'c=' + k.id), count: D.COURSES.filter(c => c.cat === k.id).length + ' courses' })),
+      courses: D.COURSES.map(c => D.card('web', c, favs, set))
+    };
+  }
+}
+</script>
+</body>
+</html>

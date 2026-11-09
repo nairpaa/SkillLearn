@@ -1,0 +1,301 @@
+openapi: 3.1.0
+info:
+  title: SkillLearn API
+  version: 1.0.0
+  description: |
+    REST API for the SkillLearn web (React) and mobile (React Native) apps.
+    Node.js + Express + MongoDB (Mongoose). Auth: PASETO v4.public access token (15 min) + rotating opaque refresh token.
+    Security rules are in "SkillLearn Architecture and Security" (design/ folder). Errors never include stack traces.
+servers:
+  - url: https://skilllearn-api.onrender.com/api
+  - url: http://localhost:8080/api
+tags: [{ name: auth }, { name: courses }, { name: quizzes }, { name: me }, { name: admin }]
+security: [{ paseto: [] }]
+
+paths:
+  /health:
+    get: { tags: [auth], security: [], summary: Liveness probe, responses: { '200': { description: ok } } }
+
+  /auth/register:
+    post:
+      tags: [auth]
+      security: []
+      summary: Create account. Always 202 (no user enumeration). Existing email gets a notice email instead.
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/RegisterInput' } } } }
+      responses:
+        '202': { $ref: '#/components/responses/Accepted' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /auth/verify-email:
+    post:
+      tags: [auth]
+      security: []
+      summary: Consume single-use verification token (24 h)
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [token], properties: { token: { type: string, maxLength: 128 } }, additionalProperties: false } } } }
+      responses:
+        '204': { description: Email verified }
+        '400': { $ref: '#/components/responses/TokenInvalid' }
+
+  /auth/login:
+    post:
+      tags: [auth]
+      security: []
+      summary: Login. Generic 401 for unknown email or wrong password (constant-time via dummy hash).
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/LoginInput' } } } }
+      responses:
+        '200':
+          description: Logged in. Web also receives Set-Cookie sl_rt (httpOnly; Secure; SameSite=Strict; Path=/api/auth).
+          content: { application/json: { schema: { $ref: '#/components/schemas/TokenPair' } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { description: INVALID_CREDENTIALS, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '403': { description: EMAIL_NOT_VERIFIED (only after a correct password), content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /auth/refresh:
+    post:
+      tags: [auth]
+      security: []
+      summary: Rotate refresh token. Reuse of an old token revokes the whole session family.
+      description: Web sends cookie sl_rt + header X-Requested-With; Origin must equal APP_ORIGIN. Mobile sends refreshToken in body.
+      requestBody: { content: { application/json: { schema: { type: object, properties: { refreshToken: { type: string, maxLength: 128 } }, additionalProperties: false } } } }
+      responses:
+        '200': { description: New pair, content: { application/json: { schema: { $ref: '#/components/schemas/TokenPair' } } } }
+        '401': { description: SESSION_INVALID | SESSION_EXPIRED, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      summary: Revoke current session (or all with allDevices=true) and clear cookie
+      requestBody: { content: { application/json: { schema: { type: object, properties: { allDevices: { type: boolean, default: false } }, additionalProperties: false } } } }
+      responses: { '204': { description: Logged out } }
+
+  /auth/forgot-password:
+    post:
+      tags: [auth]
+      security: []
+      summary: Always 202 ("If an account exists…"). Reset link valid 30 min, single use.
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [email], properties: { email: { type: string, format: email, maxLength: 254 } }, additionalProperties: false } } } }
+      responses: { '202': { $ref: '#/components/responses/Accepted' }, '429': { $ref: '#/components/responses/RateLimited' } }
+
+  /auth/reset-password:
+    post:
+      tags: [auth]
+      security: []
+      summary: Set new password; revokes every session of the user
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [token, password], properties: { token: { type: string, maxLength: 128 }, password: { $ref: '#/components/schemas/Password' } }, additionalProperties: false } } } }
+      responses: { '204': { description: Password changed }, '400': { $ref: '#/components/responses/TokenInvalid' } }
+
+  /courses:
+    get:
+      tags: [courses]
+      summary: List published courses (Home, Search, Category)
+      parameters:
+        - { name: q, in: query, schema: { type: string, maxLength: 60 }, description: Escaped before $regex }
+        - { name: category, in: query, schema: { $ref: '#/components/schemas/CategoryId' } }
+        - { name: type, in: query, schema: { $ref: '#/components/schemas/LessonType' } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 50, default: 20 } }
+      responses:
+        '200': { description: Courses, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/CourseSummary' } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /courses/{slug}:
+    get:
+      tags: [courses]
+      summary: Course detail with lessons and the caller's progress
+      parameters: [{ name: slug, in: path, required: true, schema: { type: string, pattern: '^[a-z0-9-]{1,64}$' } }]
+      responses:
+        '200': { description: Course, content: { application/json: { schema: { $ref: '#/components/schemas/CourseDetail' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /quizzes/{id}:
+    get:
+      tags: [quizzes]
+      summary: Questions WITHOUT correctIndex / explanation
+      parameters: [{ $ref: '#/components/parameters/ObjectId' }]
+      responses:
+        '200': { description: Quiz, content: { application/json: { schema: { $ref: '#/components/schemas/QuizPublic' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /quizzes/{id}/attempts:
+    post:
+      tags: [quizzes]
+      summary: Submit answers; server scores and returns explanations
+      parameters: [{ $ref: '#/components/parameters/ObjectId' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [answers], properties: { answers: { type: array, maxItems: 50, items: { type: integer, minimum: 0, maximum: 9 } } }, additionalProperties: false } } } }
+      responses:
+        '201': { description: Scored, content: { application/json: { schema: { $ref: '#/components/schemas/QuizResult' } } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+
+  /me:
+    get:
+      tags: [me]
+      summary: Current user (from token sub)
+      responses: { '200': { description: User, content: { application/json: { schema: { $ref: '#/components/schemas/User' } } } } }
+    patch:
+      tags: [me]
+      summary: Update profile. Allowlist only (name, bio, interests). Any other field → 400.
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/ProfileUpdate' } } } }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/User' } } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [me]
+      summary: Delete account and personal data (UU PDP)
+      responses: { '204': { description: Deleted } }
+
+  /me/favorites:
+    get:
+      tags: [me]
+      summary: Caller's favorites (query always scoped by userId from token)
+      responses: { '200': { description: Favorites, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/CourseSummary' } } } } } }
+  /me/favorites/{courseId}:
+    parameters: [{ name: courseId, in: path, required: true, schema: { $ref: '#/components/schemas/ObjectId' } }]
+    put: { tags: [me], summary: Save (idempotent), responses: { '204': { description: Saved }, '404': { $ref: '#/components/responses/NotFound' } } }
+    delete: { tags: [me], summary: Unsave (idempotent), responses: { '204': { description: Removed } } }
+
+  /me/history:
+    get:
+      tags: [me]
+      summary: Learning history, newest first
+      parameters: [{ name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 50, default: 20 } }]
+      responses: { '200': { description: History, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/HistoryItem' } } } } } }
+    post:
+      tags: [me]
+      summary: Record a lesson view
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [courseId, lessonId], properties: { courseId: { $ref: '#/components/schemas/ObjectId' }, lessonId: { $ref: '#/components/schemas/ObjectId' } }, additionalProperties: false } } } }
+      responses: { '204': { description: Recorded } }
+
+  /admin/courses:
+    post:
+      tags: [admin]
+      summary: Create course (role admin)
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CourseDetail' } } } }
+      responses: { '201': { description: Created }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /admin/courses/{id}:
+    parameters: [{ $ref: '#/components/parameters/ObjectId' }]
+    patch: { tags: [admin], summary: Update course, responses: { '200': { description: Updated }, '403': { $ref: '#/components/responses/Forbidden' } } }
+    delete: { tags: [admin], summary: Delete course, responses: { '204': { description: Deleted }, '403': { $ref: '#/components/responses/Forbidden' } } }
+
+components:
+  securitySchemes:
+    paseto: { type: http, scheme: bearer, bearerFormat: PASETO v4.public, description: 'Authorization: Bearer v4.public.… (15 min). Claims: sub, sid, role, iss=skilllearn-api, aud=skilllearn-app, exp, jti; footer {kid}.' }
+  parameters:
+    ObjectId: { name: id, in: path, required: true, schema: { $ref: '#/components/schemas/ObjectId' } }
+  responses:
+    Accepted: { description: Accepted, content: { application/json: { schema: { type: object, properties: { message: { type: string, example: Check your inbox } } } } } }
+    ValidationError: { description: VALIDATION_ERROR, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    Unauthorized: { description: TOKEN_INVALID_OR_EXPIRED, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    Forbidden: { description: FORBIDDEN, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    NotFound: { description: NOT_FOUND (also returned for resources owned by someone else), content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    TokenInvalid: { description: TOKEN_INVALID, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    RateLimited:
+      description: TOO_MANY_ATTEMPTS
+      headers: { Retry-After: { schema: { type: integer } }, RateLimit: { schema: { type: string } } }
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+  schemas:
+    ObjectId: { type: string, pattern: '^[a-f0-9]{24}$' }
+    CategoryId: { type: string, enum: [programming, design, marketing, technology] }
+    LessonType: { type: string, enum: [Video, Article, Quiz, Practice] }
+    Password: { type: string, minLength: 8, maxLength: 128, description: 'At least one digit; rejected if in common-password list' }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, example: INVALID_CREDENTIALS }
+        fields: { type: object, additionalProperties: { type: string }, description: 'Per-field messages for VALIDATION_ERROR, e.g. { "email": "Enter a valid email" }' }
+    RegisterInput:
+      type: object
+      additionalProperties: false
+      required: [name, email, password]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 80 }
+        email: { type: string, format: email, maxLength: 254 }
+        password: { $ref: '#/components/schemas/Password' }
+    LoginInput:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties: { email: { type: string, format: email, maxLength: 254 }, password: { type: string, minLength: 1, maxLength: 128 } }
+    TokenPair:
+      type: object
+      properties:
+        accessToken: { type: string, example: v4.public.eyJzdWIiOi… }
+        expiresIn: { type: integer, example: 900 }
+        refreshToken: { type: string, description: Mobile only. Web gets it as httpOnly cookie. }
+    User:
+      type: object
+      properties:
+        id: { $ref: '#/components/schemas/ObjectId' }
+        name: { type: string }
+        email: { type: string }
+        bio: { type: string, maxLength: 160 }
+        interests: { type: array, items: { $ref: '#/components/schemas/CategoryId' } }
+        role: { type: string, enum: [student, admin] }
+        createdAt: { type: string, format: date-time }
+        stats: { type: object, properties: { inProgress: { type: integer }, completed: { type: integer }, quizAverage: { type: number, nullable: true } } }
+    ProfileUpdate:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name: { type: string, minLength: 2, maxLength: 80 }
+        bio: { type: string, maxLength: 160 }
+        interests: { type: array, maxItems: 4, items: { $ref: '#/components/schemas/CategoryId' } }
+    CourseSummary:
+      type: object
+      properties:
+        id: { $ref: '#/components/schemas/ObjectId' }
+        slug: { type: string, example: react }
+        title: { type: string, example: 'React Fundamentals: Build Your First App' }
+        category: { $ref: '#/components/schemas/CategoryId' }
+        type: { $ref: '#/components/schemas/LessonType' }
+        lessonCount: { type: integer, example: 12 }
+        duration: { type: string, example: 3h 20m }
+        level: { type: string, enum: [Beginner, Intermediate, Advanced] }
+        rating: { type: number, example: 4.8 }
+        thumbnailUrl: { type: string, format: uri }
+        isFavorite: { type: boolean }
+    CourseDetail:
+      allOf:
+        - $ref: '#/components/schemas/CourseSummary'
+        - type: object
+          properties:
+            description: { type: string }
+            author: { type: string }
+            progress: { type: integer, minimum: 0, maximum: 100 }
+            currentLessonIndex: { type: integer }
+            lessons:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { $ref: '#/components/schemas/ObjectId' }
+                  title: { type: string }
+                  type: { $ref: '#/components/schemas/LessonType' }
+                  duration: { type: string, example: 14 min }
+                  status: { type: string, enum: [done, current, todo] }
+                  videoId: { type: string, description: YouTube id (Video) }
+                  contentMd: { type: string, description: Markdown, rendered with rehype-sanitize (Article / Practice) }
+                  quizId: { $ref: '#/components/schemas/ObjectId' }
+    QuizPublic:
+      type: object
+      properties:
+        id: { $ref: '#/components/schemas/ObjectId' }
+        title: { type: string }
+        questions: { type: array, items: { type: object, properties: { text: { type: string }, options: { type: array, items: { type: string } }, mono: { type: boolean } } } }
+    QuizResult:
+      type: object
+      properties:
+        score: { type: integer }
+        total: { type: integer }
+        review: { type: array, items: { type: object, properties: { correct: { type: boolean }, correctIndex: { type: integer }, explanation: { type: string } } } }
+    HistoryItem:
+      type: object
+      properties:
+        courseId: { $ref: '#/components/schemas/ObjectId' }
+        courseTitle: { type: string }
+        lessonId: { $ref: '#/components/schemas/ObjectId' }
+        lessonTitle: { type: string }
+        type: { $ref: '#/components/schemas/LessonType' }
+        viewedAt: { type: string, format: date-time }

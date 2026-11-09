@@ -1,0 +1,36 @@
+{
+  "viewports": {
+    "web": { "width": 1440, "height": 900 },
+    "mobile": { "width": 390, "height": 844 }
+  },
+  "screens": [
+    { "id": "W01", "platform": "web", "name": "Login", "file": "Web - Login.dc.html", "states": [{ "id": "default", "hash": "" }, { "id": "session-expired", "hash": "expired=1" }] },
+    { "id": "W02", "platform": "web", "name": "Register", "file": "Web - Register.dc.html", "states": [{ "id": "default", "hash": "" }] },
+    { "id": "W03", "platform": "web", "name": "Forgot Password", "file": "Web - Forgot Password.dc.html", "states": [{ "id": "default", "hash": "" }] },
+    { "id": "W04", "platform": "web", "name": "Home", "file": "Web - Home.dc.html", "states": [{ "id": "default", "hash": "" }, { "id": "error", "hash": "error=1" }] },
+    { "id": "W05", "platform": "web", "name": "Search", "file": "Web - Search.dc.html", "states": [{ "id": "default", "hash": "" }, { "id": "no-results", "hash": "q=kotlin" }] },
+    { "id": "W06", "platform": "web", "name": "Category", "file": "Web - Category.dc.html", "states": [{ "id": "default", "hash": "c=programming" }, { "id": "not-found", "hash": "c=unknown" }] },
+    { "id": "W07", "platform": "web", "name": "Course Detail", "file": "Web - Course Detail.dc.html", "states": [{ "id": "in-progress", "hash": "c=react" }, { "id": "not-started", "hash": "c=seo" }, { "id": "not-found", "hash": "c=xyz" }] },
+    { "id": "W08", "platform": "web", "name": "Article", "file": "Web - Article.dc.html", "states": [{ "id": "default", "hash": "c=react" }] },
+    { "id": "W09", "platform": "web", "name": "Quiz", "file": "Web - Quiz.dc.html", "states": [{ "id": "default", "hash": "c=react" }] },
+    { "id": "W10", "platform": "web", "name": "Practice", "file": "Web - Practice.dc.html", "states": [{ "id": "default", "hash": "c=react" }] },
+    { "id": "W11", "platform": "web", "name": "Profile", "file": "Web - Profile.dc.html", "states": [{ "id": "default", "hash": "" }] },
+    { "id": "W12", "platform": "web", "name": "Edit Profile", "file": "Web - Edit Profile.dc.html", "states": [{ "id": "default", "hash": "" }] },
+
+    { "id": "M00", "platform": "mobile", "name": "Splash", "file": "Mobile - Splash.dc.html", "states": [{ "id": "default", "hash": "" }] },
+    { "id": "M01", "platform": "mobile", "name": "Login", "file": "Mobile - Login.dc.html", "states": [{ "id": "default", "hash": "" }, { "id": "session-expired", "hash": "expired=1" }] },
+    { "id": "M02", "platform": "mobile", "name": "Register", "file": "Mobile - Register.dc.html", "states": [{ "id": "default", "hash": "" }] },
+    { "id": "M03", "platform": "mobile", "name": "Forgot Password", "file": "Mobile - Forgot Password.dc.html", "states": [{ "id": "default", "hash": "" }] },
+    { "id": "M04", "platform": "mobile", "name": "Home", "file": "Mobile - Home.dc.html", "states": [{ "id": "default", "hash": "" }, { "id": "error", "hash": "error=1" }] },
+    { "id": "M05", "platform": "mobile", "name": "Search", "file": "Mobile - Search.dc.html", "states": [{ "id": "default", "hash": "" }, { "id": "no-results", "hash": "q=kotlin" }] },
+    { "id": "M06", "platform": "mobile", "name": "Category", "file": "Mobile - Category.dc.html", "states": [{ "id": "default", "hash": "c=design" }, { "id": "not-found", "hash": "c=unknown" }] },
+    { "id": "M07", "platform": "mobile", "name": "Course Detail", "file": "Mobile - Course Detail.dc.html", "states": [{ "id": "in-progress", "hash": "c=react" }, { "id": "not-started", "hash": "c=seo" }] },
+    { "id": "M08", "platform": "mobile", "name": "Article", "file": "Mobile - Article.dc.html", "states": [{ "id": "default", "hash": "c=react" }] },
+    { "id": "M09", "platform": "mobile", "name": "Quiz", "file": "Mobile - Quiz.dc.html", "states": [{ "id": "default", "hash": "c=react" }] },
+    { "id": "M10", "platform": "mobile", "name": "Practice", "file": "Mobile - Practice.dc.html", "states": [{ "id": "default", "hash": "c=react" }] },
+    { "id": "M11", "platform": "mobile", "name": "Profile", "file": "Mobile - Profile.dc.html", "states": [{ "id": "default", "hash": "" }] },
+    { "id": "M12", "platform": "mobile", "name": "Edit Profile", "file": "Mobile - Edit Profile.dc.html", "states": [{ "id": "default", "hash": "" }] },
+
+    { "id": "R00", "platform": "reference", "name": "Design canvas (foundations, flow, states)", "file": "SkillLearn UI.dc.html", "viewport": { "width": 1600, "height": 1000 }, "states": [{ "id": "default", "hash": "" }] }
+  ]
+}

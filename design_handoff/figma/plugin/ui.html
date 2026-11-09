@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<body style="font:12px/1.5 Inter,system-ui,sans-serif;margin:0;padding:16px;color:#16211F">
+  <div style="font-weight:700;font-size:14px;margin-bottom:4px">SkillLearn Importer</div>
+  <div style="color:#4A5856;margin-bottom:14px">Creates variables, text/effect styles, and screen frames.</div>
+
+  <label style="display:block;font-weight:600;margin-bottom:4px">1. tokens/tokens.json</label>
+  <input id="tokens" type="file" accept=".json" style="margin-bottom:12px;width:100%">
+
+  <label style="display:block;font-weight:600;margin-bottom:4px">2. Screenshots (figma/out/*.png)</label>
+  <input id="shots" type="file" accept="image/png" multiple style="margin-bottom:14px;width:100%">
+
+  <button id="go" style="width:100%;height:36px;border:0;border-radius:8px;background:#0E5E52;color:#fff;font-weight:700;cursor:pointer">Import</button>
+  <div id="status" style="margin-top:12px;color:#4A5856;white-space:pre-wrap"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const status = (t) => { $('status').textContent = t; };
+onmessage = (e) => { const m = e.data.pluginMessage; if (m && m.status) status(m.status); };
+$('go').onclick = async () => {
+  const tf = $('tokens').files[0];
+  const shots = [...$('shots').files];
+  if (!tf && !shots.length) return status('Pick tokens.json and/or PNG files first.');
+  status('Reading files…');
+  const tokens = tf ? JSON.parse(await tf.text()) : null;
+  const images = [];
+  for (const f of shots) images.push({ name: f.name, bytes: new Uint8Array(await f.arrayBuffer()) });
+  parent.postMessage({ pluginMessage: { type: 'import', tokens, images } }, '*');
+};
+</script>
+</body>
+</html>

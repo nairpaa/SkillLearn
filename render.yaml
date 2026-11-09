@@ -1,0 +1,42 @@
+# Blueprint Render untuk API (sesuai dokumen arsitektur: Render Free Web Service).
+# Dashboard Render → New → Blueprint → pilih repo ini. Nilai `sync: false` diisi manual saat deploy.
+services:
+  - type: web
+    name: skilllearn-api
+    runtime: node
+    region: singapore
+    plan: free
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: node src/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: MONGODB_URI
+        sync: false
+      - key: PASETO_SECRET_KEY
+        sync: false
+      - key: PASETO_PUBLIC_KEY
+        sync: false
+      - key: PASETO_KID
+        value: k1
+      - key: APP_ORIGIN
+        sync: false
+      - key: TRUST_PROXY
+        value: "1"
+      # Sama persis dengan PROXY_SHARED_SECRET di project Vercel web (lihat docs/DEPLOYMENT.md)
+      - key: PROXY_SHARED_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: SMTP_URL
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: DEMO_PASSWORD
+        sync: false

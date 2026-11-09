@@ -1,0 +1,16 @@
+{
+  "name": "skilllearn-figma-export",
+  "private": true,
+  "type": "module",
+  "description": "Mengubah prototype desain SkillLearn (HTML) menjadi layer Figma yang bisa diedit.",
+  "scripts": {
+    "capture": "node capture-layers.mjs",
+    "preview": "node preview.mjs",
+    "check": "tsc -p plugin/tsconfig.json"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.142.0",
+    "playwright-core": "^1.65.0",
+    "typescript": "~5.9.0"
+  }
+}

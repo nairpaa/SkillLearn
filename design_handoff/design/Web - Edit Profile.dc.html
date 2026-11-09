@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"><style>@keyframes sl-spin{to{transform:rotate(360deg)}}body{margin:0;background:#F6F8F7;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#16211F;-webkit-font-smoothing:antialiased}a{color:#0E5E52;text-decoration:none}a:hover{color:#0B4D43}*{box-sizing:border-box}input,button,textarea{font-family:inherit}</style></helmet>
+<div data-screen-label="Web Edit Profile" style="min-height:100vh;background:#F6F8F7">
+  <dc-import name="WebNav" active="profile" hint-size="100%,68px" style="position:sticky;top:0;z-index:10"></dc-import>
+  <form onSubmit="{{ save }}" style="max-width:760px;margin:0 auto;padding:32px 40px 64px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;flex-direction:column;gap:6px"><a href="Web - Profile.dc.html" style="font-size:14px;font-weight:600;color:#4A5856">← Profile</a><div style="font-size:30px;font-weight:800;letter-spacing:-.02em">Edit profile</div></div>
+    <sc-if value="{{ saved }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 16px;border-radius:10px;background:#0E5E52;color:#fff;font-size:14px;font-weight:600">Profile updated. Returning to your profile…</div></sc-if>
+    <div style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:18px">
+        <div style="width:72px;height:72px;border-radius:50%;background:#F2A93B;font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center">{{ initials }}</div>
+        <div style="display:flex;gap:10px"><button type="button" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid #D5DDDA;background:#fff;font-size:14px;font-weight:600;cursor:pointer;color:#16211F;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#F6F8F7;border-color:#B9C4C1">Upload photo</button><button type="button" style="height:40px;padding:0 14px;border-radius:10px;border:0;background:transparent;font-size:14px;font-weight:600;color:#4A5856;cursor:pointer">Remove</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Full name</span><input value="{{ name }}" onChange="{{ onName }}" aria-invalid="{{ fe.name.invalid }}" style="height:46px;min-width:0;border:1px solid {{ fe.name.border }};background:{{ fe.name.bg }};border-radius:10px;padding:0 14px;font-size:15px;color:#16211F;outline-color:#0E5E52"><sc-if value="{{ fe.name.has }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:600;color:#C2412D">{{ fe.name.msg }}</span></sc-if></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Email</span><input type="email" value="{{ email }}" onChange="{{ onEmail }}" aria-invalid="{{ fe.email.invalid }}" style="height:46px;min-width:0;border:1px solid {{ fe.email.border }};background:{{ fe.email.bg }};border-radius:10px;padding:0 14px;font-size:15px;color:#16211F;outline-color:#0E5E52"><sc-if value="{{ fe.email.has }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:600;color:#C2412D">{{ fe.email.msg }}</span></sc-if></label>
+      </div>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="display:flex;justify-content:space-between"><span style="font-size:13px;font-weight:600">Short bio</span><span style="font-size:12px;color:#4A5856">{{ bioCount }}</span></span><textarea maxLength="160" value="{{ bio }}" onChange="{{ onBio }}" rows="3" style="border:1px solid #D5DDDA;border-radius:10px;padding:12px 14px;font-size:15px;line-height:1.5;color:#16211F;outline-color:#0E5E52;resize:vertical"></textarea></label>
+      <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:600">Interests</span><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ interests }}" as="t" hint-placeholder-count="4"><button type="button" onClick="{{ t.toggle }}" style="padding:8px 14px;border-radius:999px;border:1px solid {{ t.border }};background:{{ t.bg }};color:{{ t.color }};font-size:13px;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="border-color:#0E5E52;color:#0E5E52">{{ t.name }}</button></sc-for></div></div>
+    </div>
+    <div style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:16px;font-weight:700">Change password</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Current password</span><input type="password" placeholder="••••••••" style="height:46px;min-width:0;border:1px solid #D5DDDA;border-radius:10px;padding:0 14px;font-size:15px;outline-color:#0E5E52"></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">New password</span><input type="password" placeholder="8+ characters" style="height:46px;min-width:0;border:1px solid #D5DDDA;border-radius:10px;padding:0 14px;font-size:15px;outline-color:#0E5E52"></label>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px">
+      <a href="Web - Profile.dc.html" style="height:46px;padding:0 18px;border-radius:10px;border:1px solid #D5DDDA;display:flex;align-items:center;font-size:14px;font-weight:600;color:#16211F;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#F6F8F7;border-color:#B9C4C1">Cancel</a>
+      <button type="submit" disabled="{{ busy }}" style="height:46px;padding:0 22px;border-radius:10px;border:0;background:{{ btnBg }};color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px" style-hover="background:#0B4D43"><sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:sl-spin .8s linear infinite"></span></sc-if>{{ saveLabel }}</button>
+    </div>
+  </form>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = (() => { let u = null; try { u = JSON.parse(localStorage.getItem('skilllearn-user')); } catch (e) {}
+    u = (u && u.name) ? u : { name: 'Alya Rahma', email: 'alya@student.ac.id', isNew: false, joined: 'March 2026', bio: 'Informatics student. Learning React and UI design.', interests: ['Programming', 'Graphic Design'] };
+    return { u, name: u.name, email: u.email, bio: u.bio || '', picks: u.interests || [], saved: false, busy: false, errors: {} }; })();
+  renderVals() {
+    const s = this.state, f = (k) => (e) => this.setState({ [k]: e.target.value, errors: { ...s.errors, [k]: '' }, saved: false });
+    const F = (k) => { const m = s.errors[k]; return { has: !!m, msg: m || '', border: m ? '#C2412D' : '#D5DDDA', bg: m ? '#FFF8F6' : '#fff', invalid: m ? 'true' : 'false' }; };
+    return {
+      name: s.name, email: s.email, bio: s.bio, onName: f('name'), onEmail: f('email'), onBio: f('bio'),
+      initials: s.name.split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase() || '?',
+      interests: ['Programming', 'Graphic Design', 'Digital Marketing', 'Technology'].map(name => {
+        const on = s.picks.includes(name);
+        return { name, bg: on ? '#E7F3F0' : '#fff', border: on ? '#0E5E52' : '#E3E8E6', color: on ? '#0E5E52' : '#4A5856',
+          toggle: () => this.setState({ picks: on ? s.picks.filter(x => x !== name) : [...s.picks, name] }) };
+      }),
+      saved: s.saved, fe: { name: F('name'), email: F('email') }, busy: s.busy, saveLabel: s.busy ? 'Saving…' : 'Save changes', btnBg: s.busy ? '#4F8C82' : '#0E5E52', bioCount: (s.bio || '').length + '/160',
+      save: (e) => {
+        e.preventDefault();
+        if (s.busy) return;
+        const er = {};
+        if (s.name.trim().length < 2) er.name = 'Name must be at least 2 characters.';
+        if (!/^\S+@\S+\.\S+$/.test(s.email)) er.email = 'Enter a valid email, e.g. name@student.ac.id.';
+        if (Object.keys(er).length) return this.setState({ errors: er });
+        this.setState({ busy: true, errors: {} });
+        setTimeout(() => {
+          localStorage.setItem('skilllearn-user', JSON.stringify({ ...s.u, name: s.name.trim(), email: s.email.trim(), bio: s.bio, interests: s.picks }));
+          this.setState({ busy: false, saved: true });
+          setTimeout(() => { location.href = 'Web - Profile.dc.html'; }, 900);
+        }, 700);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

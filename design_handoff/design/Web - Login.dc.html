@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"><style>body{margin:0;background:#F6F8F7;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#16211F;-webkit-font-smoothing:antialiased}a{color:#0E5E52;text-decoration:none}a:hover{color:#0B4D43}*{box-sizing:border-box}input,button,textarea{font-family:inherit}@keyframes sl-spin{to{transform:rotate(360deg)}}</style></helmet>
+<div data-screen-label="Web Login" style="min-height:100vh;display:grid;grid-template-columns:minmax(380px,520px) 1fr;background:#fff">
+  <div style="background:#0E5E52;color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:space-between;gap:40px">
+    <div style="display:flex;align-items:center;gap:10px"><svg width="34" height="34" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#fff"></rect><path d="M8 23h5v-5h5v-5h5" stroke="#0E5E52" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg><span style="font-size:20px;font-weight:800">SkillLearn</span></div>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div style="font-size:40px;font-weight:800;line-height:1.1;letter-spacing:-.02em;text-wrap:pretty">Learn a new skill, one step at a time.</div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:15px;color:#CFE6E0">
+        <div style="display:flex;gap:10px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#F2A93B"></span>Articles and video tutorials</div>
+        <div style="display:flex;gap:10px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#F2A93B"></span>Quizzes and hands-on practice</div>
+        <div style="display:flex;gap:10px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#F2A93B"></span>Save favorites, track your history</div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:#CFE6E0">© 2026 SkillLearn</div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;padding:48px 24px">
+    <form onSubmit="{{ submit }}" noValidate="{{ true }}" style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:28px;font-weight:800;letter-spacing:-.02em">Welcome back</div><div style="font-size:14px;color:#4A5856">Log in to continue learning.</div></div>
+      <sc-if value="{{ expired }}" hint-placeholder-val="{{ false }}"><div role="status" style="padding:12px 14px;border-radius:10px;background:#FBF3DF;border:1px solid #F0E2B8;color:#5E420C;font-size:13px;font-weight:600;line-height:1.5">Your session expired. Log in again to continue where you left off.</div></sc-if>
+      <sc-if value="{{ hasFormErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="padding:12px 14px;border-radius:10px;background:#FBE9E5;color:#9A3322;font-size:13px;font-weight:600;line-height:1.5">{{ formErr }}</div></sc-if>
+      <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Email</span><input type="email" value="{{ email }}" onChange="{{ onEmail }}" aria-invalid="{{ fe.email.invalid }}" placeholder="you@student.ac.id" style="height:48px;border:1px solid {{ fe.email.border }};background:{{ fe.email.bg }};border-radius:10px;padding:0 14px;font-size:15px;color:#16211F;outline-color:#0E5E52"><sc-if value="{{ fe.email.has }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:600;color:#C2412D">{{ fe.email.msg }}</span></sc-if></label>
+      <label style="display:flex;flex-direction:column;gap:6px">
+        <span style="display:flex;justify-content:space-between"><span style="font-size:13px;font-weight:600">Password</span><a href="Web - Forgot Password.dc.html" style="font-size:13px;font-weight:600">Forgot password?</a></span>
+        <span style="position:relative;display:flex"><input type="{{ pwType }}" value="{{ pw }}" onChange="{{ onPw }}" aria-invalid="{{ fe.pw.invalid }}" placeholder="At least 8 characters" style="flex:1;height:48px;border:1px solid {{ fe.pw.border }};background:{{ fe.pw.bg }};border-radius:10px;padding:0 64px 0 14px;font-size:15px;color:#16211F;outline-color:#0E5E52"><button type="button" onClick="{{ toggleShow }}" style="position:absolute;right:8px;top:8px;height:32px;padding:0 10px;border:0;border-radius:6px;background:transparent;font-size:13px;font-weight:600;color:#4A5856;cursor:pointer" style-hover="background:#EEF1F0">{{ showLabel }}</button></span>
+        <sc-if value="{{ fe.pw.has }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:600;color:#C2412D">{{ fe.pw.msg }}</span></sc-if>
+      </label>
+      <button type="submit" disabled="{{ busy }}" style="height:48px;border:0;border-radius:10px;background:{{ btnBg }};color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:10px" style-hover="background:#0B4D43"><sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:sl-spin .8s linear infinite"></span></sc-if>{{ btnLabel }}</button>
+      <div style="font-size:14px;color:#4A5856;text-align:center">New to SkillLearn? <a href="Web - Register.dc.html" style="font-weight:700">Create an account</a></div>
+      <div style="font-size:12px;color:#8A9693;text-align:center">Demo: wrong@student.ac.id shows invalid login; 5 attempts shows the rate limit.</div>
+    </form>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { email: 'alya@student.ac.id', pw: 'skilllearn1', show: false, errors: {}, formErr: '', busy: false, expired: /expired=1/.test(location.hash) };
+  renderVals() {
+    const s = this.state;
+    const F = (k) => { const m = s.errors[k]; return { has: !!m, msg: m || '', border: m ? '#C2412D' : '#D5DDDA', bg: m ? '#FFF8F6' : '#fff', invalid: m ? 'true' : 'false' }; };
+    return {
+      email: s.email, pw: s.pw, pwType: s.show ? 'text' : 'password', showLabel: s.show ? 'Hide' : 'Show',
+      fe: { email: F('email'), pw: F('pw') }, expired: s.expired,
+      hasFormErr: !!s.formErr, formErr: s.formErr,
+      busy: s.busy, btnLabel: s.busy ? 'Logging in…' : 'Log in', btnBg: s.busy ? '#4F8C82' : '#0E5E52',
+      onEmail: (e) => this.setState({ email: e.target.value, errors: { ...s.errors, email: '' }, formErr: '' }),
+      onPw: (e) => this.setState({ pw: e.target.value, errors: { ...s.errors, pw: '' }, formErr: '' }),
+      toggleShow: () => this.setState({ show: !s.show }),
+      submit: (e) => {
+        e.preventDefault();
+        if (s.busy) return;
+        const errors = {};
+        if (!s.email.trim()) errors.email = 'Email is required.';
+        else if (!/^\S+@\S+\.\S+$/.test(s.email)) errors.email = 'Enter a valid email, e.g. name@student.ac.id.';
+        if (!s.pw) errors.pw = 'Password is required.';
+        else if (s.pw.length < 8) errors.pw = 'Password must be at least 8 characters.';
+        if (errors.email || errors.pw) return this.setState({ errors });
+        this.setState({ busy: true, errors: {}, formErr: '', expired: false });
+        setTimeout(() => {
+          if (s.email.toLowerCase() === 'wrong@student.ac.id') { this.fails = (this.fails || 0) + 1; return this.setState({ busy: false, formErr: this.fails >= 5 ? 'Too many attempts. Try again in 15 minutes.' : 'Email or password is incorrect. Check both and try again.' }); }
+          let prev = null; try { prev = JSON.parse(localStorage.getItem('skilllearn-user')); } catch (e) {}
+          if (!(prev && prev.email && prev.email.toLowerCase() === s.email.toLowerCase()))
+          localStorage.setItem('skilllearn-user', JSON.stringify({ name: 'Alya Rahma', email: s.email, isNew: false, joined: 'March 2026', bio: 'Informatics student. Learning React and UI design.', interests: ['Programming', 'Graphic Design'] }));
+          location.href = 'Web - Home.dc.html';
+        }, 800);
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

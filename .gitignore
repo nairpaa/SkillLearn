@@ -1,0 +1,9 @@
+node_modules
+.env
+.vercel
+dist
+.expo
+design_handoff/figma/out/
+SkillLearn-Figma.zip
+figma-export/out/
+SkillLearn-Figma-v2.zip

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>@keyframes sl-pulse{0%,100%{opacity:1}50%{opacity:.45}}</style></helmet>
+<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#16211F">
+  <sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}"><div style="height:50px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #16211F;border-radius:3px"></span></div></sc-if>
+  <div style="max-width:{{ maxW }};margin:0 auto;padding:{{ pad }}">
+    <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ true }}">
+      <div aria-busy="true" aria-label="Loading" style="display:flex;flex-direction:column;gap:20px;animation:sl-pulse 1.4s ease-in-out infinite">
+        <sc-if value="{{ gridWeb }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:24px">
+            <div style="width:320px;max-width:70%;height:34px;border-radius:10px;background:#E3E8E6"></div>
+            <div style="width:220px;max-width:50%;height:16px;border-radius:8px;background:#E3E8E6"></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px">
+              <sc-for list="{{ six }}" as="x" hint-placeholder-count="6"><div style="background:#fff;border:1px solid #E3E8E6;border-radius:14px;overflow:hidden"><div style="height:150px;background:#E3E8E6"></div><div style="padding:16px;display:flex;flex-direction:column;gap:10px"><div style="height:16px;width:85%;border-radius:8px;background:#E3E8E6"></div><div style="height:12px;width:55%;border-radius:6px;background:#EEF1F0"></div></div></div></sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ list }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="width:60%;height:28px;border-radius:10px;background:#E3E8E6"></div>
+            <div style="height:48px;border-radius:12px;background:#fff;border:1px solid #E3E8E6"></div>
+            <sc-for list="{{ six }}" as="x" hint-placeholder-count="6"><div style="background:#fff;border:1px solid #E3E8E6;border-radius:14px;padding:10px;display:flex;gap:12px;align-items:center"><div style="width:72px;height:72px;border-radius:10px;background:#E3E8E6;flex:none"></div><div style="flex:1;display:flex;flex-direction:column;gap:8px"><div style="height:14px;width:85%;border-radius:7px;background:#E3E8E6"></div><div style="height:11px;width:50%;border-radius:6px;background:#EEF1F0"></div></div></div></sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ detail }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:{{ detailCols }};gap:28px">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="aspect-ratio:16/9;border-radius:16px;background:#E3E8E6"></div>
+              <div style="height:28px;width:70%;border-radius:10px;background:#E3E8E6"></div>
+              <div style="height:14px;width:40%;border-radius:7px;background:#EEF1F0"></div>
+              <div style="height:14px;width:95%;border-radius:7px;background:#EEF1F0"></div>
+              <div style="height:14px;width:88%;border-radius:7px;background:#EEF1F0"></div>
+            </div>
+            <sc-if value="{{ web }}" hint-placeholder-val="{{ true }}"><div style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:18px"><sc-for list="{{ six }}" as="x" hint-placeholder-count="6"><div style="display:flex;gap:12px;align-items:center"><div style="width:28px;height:28px;border-radius:50%;background:#E3E8E6"></div><div style="flex:1;height:14px;border-radius:7px;background:#EEF1F0"></div></div></sc-for></div></sc-if>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isMessage }}" hint-placeholder-val="{{ false }}">
+      <div role="alert" style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;padding:48px 24px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;margin-top:24px">
+        <div style="width:56px;height:56px;border-radius:16px;background:{{ iconBg }};display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{ iconFg }}" stroke-width="2" stroke-linecap="round"><path d="{{ iconPath }}"></path></svg></div>
+        <div style="font-size:20px;font-weight:700">{{ title }}</div>
+        <div style="font-size:14px;line-height:1.55;color:#4A5856;max-width:360px">{{ body }}</div>
+        <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;justify-content:center">
+          <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}"><button onClick="{{ retry }}" style="height:44px;padding:0 20px;border-radius:10px;border:0;background:#0E5E52;color:#fff;font-size:14px;font-weight:700;cursor:pointer" style-hover="background:#0B4D43">Try again</button></sc-if>
+          <a href="{{ backHref }}" style="height:44px;padding:0 18px;border-radius:10px;border:1px solid #D5DDDA;display:flex;align-items:center;font-size:14px;font-weight:600;color:#16211F;text-decoration:none" style-hover="background:#F6F8F7">Back to Home</a>
+        </div>
+        <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}"><div style="font:500 11px 'JetBrains Mono',monospace;color:#8A9693;margin-top:4px">ERR_NETWORK · GET /api/courses</div></sc-if>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;1200px&quot;,&quot;height&quot;:&quot;700px&quot;},&quot;kind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;loading&quot;,&quot;error&quot;,&quot;notfound&quot;],&quot;default&quot;:&quot;loading&quot;,&quot;tsType&quot;:&quot;'loading'|'error'|'notfound'&quot;},&quot;layout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;grid&quot;,&quot;detail&quot;],&quot;default&quot;:&quot;grid&quot;,&quot;tsType&quot;:&quot;'grid'|'detail'&quot;},&quot;platform&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;web&quot;,&quot;m&quot;],&quot;default&quot;:&quot;web&quot;,&quot;tsType&quot;:&quot;'web'|'m'&quot;},&quot;nfTitle&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Course not found&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;backHref&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onRetry&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props, kind = p.kind || 'loading', layout = p.layout || 'grid', web = (p.platform || 'web') === 'web';
+    const err = kind === 'error';
+    return {
+      mobile: !web, web, maxW: web ? '1200px' : '390px', pad: web ? '36px 40px 64px' : '8px 20px 28px',
+      isLoading: kind === 'loading', isMessage: kind !== 'loading', isError: err,
+      gridWeb: layout === 'grid' && web, list: layout === 'grid' && !web, detail: layout === 'detail',
+      detailCols: web ? 'minmax(0,1fr) 360px' : '1fr',
+      six: [1, 2, 3, 4, 5, 6],
+      title: err ? "Couldn't load content" : (p.nfTitle || 'Course not found'),
+      body: err ? 'Check your internet connection and try again. Your progress is saved.' : 'The link may be broken, or this item is no longer available.',
+      iconBg: err ? '#FBE9E5' : '#EEF1F0', iconFg: err ? '#C2412D' : '#4A5856',
+      iconPath: err ? 'M12 8v5M12 16.5v.5M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z' : 'M9 9h.01M15 9h.01M8 16c1.2-1 2.5-1.5 4-1.5s2.8.5 4 1.5M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z',
+      retry: () => p.onRetry && p.onRetry(),
+      backHref: p.backHref || (web ? 'Web - Home.dc.html' : 'Mobile - Home.dc.html')
+    };
+  }
+}
+</script>
+</body>
+</html>

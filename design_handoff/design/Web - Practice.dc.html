@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"><style>body{margin:0;background:#F6F8F7;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#16211F;-webkit-font-smoothing:antialiased}a{color:#0E5E52;text-decoration:none}a:hover{color:#0B4D43}*{box-sizing:border-box}input,button,textarea{font-family:inherit}</style></helmet>
+<div data-screen-label="Web Practice" style="min-height:100vh;background:#F6F8F7;display:flex;flex-direction:column">
+  <sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}"><dc-import name="StatusBlock" kind="{{ status }}" layout="detail" platform="web" on-retry="{{ retry }}" hint-size="100%,640px"></dc-import></sc-if>
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+  <div style="height:68px;flex:none;background:#fff;border-bottom:1px solid #E3E8E6;padding:0 40px;display:flex;align-items:center;gap:20px">
+    <a href="Web - Course Detail.dc.html#c=react" style="font-size:14px;font-weight:600;color:#4A5856;width:160px">← Back to course</a>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><span style="font-size:15px;font-weight:700">Practice: Build a to-do list</span><span style="font-size:12px;color:#4A5856">React Fundamentals · Lesson 6</span></div>
+    <div style="width:160px;display:flex;justify-content:flex-end"><button onClick="{{ submit }}" style="height:40px;padding:0 18px;border-radius:10px;border:0;background:#0E5E52;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#0B4D43">Submit practice</button></div>
+  </div>
+  <sc-if value="{{ hasBanner }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 40px;background:{{ bannerBg }};color:{{ bannerFg }};font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:center"><span>{{ bannerText }}</span><a href="Web - Profile.dc.html" style="color:inherit;text-decoration:underline">{{ bannerLink }}</a></div></sc-if>
+  <div style="flex:1;display:grid;grid-template-columns:400px minmax(0,1fr)">
+    <div style="background:#fff;border-right:1px solid #E3E8E6;padding:28px;display:flex;flex-direction:column;gap:18px">
+      <span style="font:500 11px 'JetBrains Mono',monospace;color:#1F4E8C;letter-spacing:.08em">PRACTICE · ~30 MIN</span>
+      <div style="font-size:15px;line-height:1.65;color:#2E3A38;text-wrap:pretty">Use <code style="font-family:'JetBrains Mono',monospace;font-size:.88em;background:#FBF3DF;color:#7A5510;border:1px solid #F0E2B8;padding:1px 6px;border-radius:6px">useState</code> to build a small to-do app. Type a task, click Add, and show it in a list below the input.</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;font-weight:700">Tasks</span><span style="font-size:13px;color:#4A5856;font-weight:600">{{ doneLabel }}</span></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ tasks }}" as="t" hint-placeholder-count="4">
+          <button onClick="{{ t.toggle }}" style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:10px;border:0;background:{{ t.bg }};text-align:left;cursor:pointer;color:#16211F">
+            <span style="width:20px;height:20px;flex:none;border-radius:6px;background:{{ t.boxBg }};border:1.5px solid {{ t.boxBorder }};color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center">{{ t.mark }}</span>
+            <span style="font-size:14px;line-height:1.45;font-weight:500">{{ t.text }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ showHint }}" hint-placeholder-val="{{ false }}"><div style="padding:14px 16px;border-radius:10px;background:#FBF3DF;color:#5E420C;font-size:14px;line-height:1.55">Inside the list, call <code style="font-family:'JetBrains Mono',monospace;font-size:.88em;background:#fff;color:#7A5510;border:1px solid #F0E2B8;padding:1px 6px;border-radius:6px">todos.map()</code> and return an <code style="font-family:'JetBrains Mono',monospace;font-size:.88em;background:#fff;color:#7A5510;border:1px solid #F0E2B8;padding:1px 6px;border-radius:6px">&lt;li&gt;</code> with a unique key for each item.</div></sc-if>
+      <div style="flex:1"></div>
+      <button onClick="{{ toggleHint }}" style="height:42px;border-radius:10px;border:1px solid #D5DDDA;background:#fff;font-size:14px;font-weight:600;cursor:pointer;color:#16211F;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#F6F8F7;border-color:#B9C4C1">{{ hintLabel }}</button>
+    </div>
+    <div style="display:flex;flex-direction:column;min-width:0">
+      <div style="flex:1;background:#16211F;display:flex;flex-direction:column">
+        <div style="height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid rgba(255,255,255,.08)">
+          <span style="font:500 12px 'JetBrains Mono',monospace;color:#fff;padding:6px 10px;border-radius:6px;background:rgba(255,255,255,.08)">App.jsx</span>
+          <button onClick="{{ run }}" style="height:32px;padding:0 14px;border-radius:8px;border:0;background:#F2A93B;color:#16211F;font-size:13px;font-weight:700;cursor:pointer">▶ Run code</button>
+        </div>
+        <div style="padding:16px 18px;font:500 13.5px/1.75 'JetBrains Mono',monospace;color:#E7F3F0;overflow-x:auto"><sc-for list="{{ code }}" as="ln" hint-placeholder-count="12"><div style="display:flex;gap:16px;min-height:1.75em"><span style="width:20px;flex:none;text-align:right;color:#5E6E6B;user-select:none">{{ ln.n }}</span><div style="white-space:pre"><sc-for list="{{ ln.toks }}" as="k" hint-placeholder-count="3"><span style="color:{{ k.c }};font-style:{{ k.i }}">{{ k.t }}</span></sc-for></div></div></sc-for></div>
+      </div>
+      <div style="background:#fff;border-top:1px solid #E3E8E6;padding:18px 22px;display:flex;flex-direction:column;gap:12px;min-height:200px">
+        <div style="display:flex;justify-content:space-between"><span style="font:500 11px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">PREVIEW</span><span style="font-size:12px;font-weight:600;color:#0E5E52">{{ checksLabel }}</span></div>
+        <sc-if value="{{ notRan }}" hint-placeholder-val="{{ true }}"><div style="font-size:14px;color:#4A5856">Click Run code to see your app here.</div></sc-if>
+        <sc-if value="{{ ran }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ addTodo }}" style="display:flex;gap:8px"><input value="{{ text }}" onChange="{{ onText }}" placeholder="New task" style="width:260px;height:38px;border:1px solid #D5DDDA;border-radius:8px;padding:0 12px;font-size:14px;outline-color:#0E5E52"><button type="submit" style="height:38px;padding:0 14px;border-radius:8px;border:0;background:#16211F;color:#fff;font-size:13px;font-weight:600;cursor:pointer">Add</button></form>
+          <div style="display:flex;flex-direction:column;gap:4px;font-size:14px;color:#2E3A38"><sc-for list="{{ todos }}" as="td" hint-placeholder-count="2"><div>• {{ td.t }}</div></sc-for></div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { D: null, done: [true, true, false, false], ran: false, hint: false, text: '', todos: ['Watch lesson 3', 'Read the JSX article'], banner: null };
+  componentDidMount() { this.boot = () => import(new URL('sl-data.js', location.href).href).then(D => { this.setState({ D, status: 'loading' }); return D.load().then(() => this.setState({ status: 'ready' }), () => this.setState({ status: 'error' })); });
+    this.boot(); }
+  renderVals() {
+    const st = this.state.status || 'loading';
+    const base = { status: st, ready: st === 'ready', notReady: st !== 'ready', retry: () => { this.setState({ status: 'loading' }); this.boot(); } };
+    if (st !== 'ready' || !this.state.D) return base;
+    const v = this.vals();
+    if (v.__notfound) return { ...base, status: 'notfound', ready: false, notReady: true };
+    return { ...base, ...v };
+  }
+  vals() {
+    const D = this.state.D; if (!D) return {};
+    const s = this.state, n = s.done.filter(Boolean).length, all = n === s.done.length;
+    return {
+      code: D.hl(D.CODE.practice),
+      tasks: D.PRACTICE_TASKS.map((text, i) => {
+        const d = s.done[i];
+        return { text, mark: d ? '✓' : '', bg: d ? '#E7F3F0' : '#F6F8F7', boxBg: d ? '#0E5E52' : '#fff', boxBorder: d ? '#0E5E52' : '#B9C4C1',
+          toggle: () => this.setState({ done: s.done.map((x, j) => (j === i ? !x : x)), banner: null }) };
+      }),
+      doneLabel: n + ' of ' + s.done.length + ' done',
+      checksLabel: s.ran ? n + ' of 4 checks passed' : '',
+      showHint: s.hint, hintLabel: s.hint ? 'Hide hint' : 'Show hint', toggleHint: () => this.setState({ hint: !s.hint }),
+      run: () => this.setState({ ran: true }), ran: s.ran, notRan: !s.ran,
+      text: s.text, onText: (e) => this.setState({ text: e.target.value }),
+      todos: s.todos.map(t => ({ t })),
+      addTodo: (e) => { e.preventDefault(); if (s.text.trim()) this.setState({ todos: [...s.todos, s.text.trim()], text: '' }); },
+      submit: () => this.setState({ banner: all ? 'ok' : 'todo' }),
+      hasBanner: !!s.banner,
+      bannerBg: s.banner === 'ok' ? '#0E5E52' : '#FBF3DF', bannerFg: s.banner === 'ok' ? '#fff' : '#5E420C',
+      bannerText: s.banner === 'ok' ? 'Practice submitted. React Fundamentals lesson 6 is complete.' : 'Finish all 4 tasks before submitting.',
+      bannerLink: s.banner === 'ok' ? 'View history' : ''
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+.nav {
+  position: sticky; top: 0; z-index: 10; height: var(--sl-nav-h); background: #fff; border-bottom: 1px solid var(--sl-line);
+  padding: 0 40px; display: flex; align-items: center; gap: 32px;
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; color: var(--sl-ink); flex: none; border-radius: 8px; }
+.nav-logo:hover { color: var(--sl-ink); }
+.nav-logo span { font-size: 18px; font-weight: 800; }
+.nav-links { display: flex; gap: 24px; font-size: 14px; font-weight: 600; }
+.nav-links a { color: var(--sl-ink-muted); transition: color var(--sl-ease-fast); border-radius: 4px; }
+.nav-links a:hover, .nav-links a.active { color: var(--sl-primary); }
+.nav-spacer { flex: 1; }
+.nav-search {
+  width: 320px; max-width: 32vw; height: 40px; border-radius: var(--sl-radius-md); background: var(--sl-surface-page);
+  border: 1px solid var(--sl-line); display: flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--sl-ink-muted);
+  transition: border-color var(--sl-ease-fast);
+}
+.nav-search:focus-within { border-color: var(--sl-primary); }
+.nav-search input {
+  flex: 1; min-width: 0; border: 0; background: transparent; outline: none; font-size: 14px; color: var(--sl-ink); height: 100%;
+}
+.nav-search input::placeholder { color: var(--sl-ink-subtle); opacity: 1; }
+.nav-search input::-webkit-search-cancel-button { display: none; }
+.nav-search-btn { display: none; color: var(--sl-ink-muted); width: 40px; height: 40px; border-radius: 10px; align-items: center; justify-content: center; }
+.nav-avatar { border-radius: 50%; flex: none; display: flex; }
+.nav-avatar .avatar { transition: box-shadow var(--sl-ease-fast); }
+.avatar-ring { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--sl-primary); }
+.nav-avatar:hover .avatar:not(.avatar-ring) { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--sl-primary-border); }
+
+main:focus { outline: none; }
+
+@media (max-width: 900px) {
+  .nav { padding: 0 20px; gap: 20px; }
+  .nav-links { gap: 16px; }
+}
+@media (max-width: 680px) {
+  .nav-search { display: none; }
+  .nav-search-btn { display: flex; }
+  .nav-logo span { display: none; }
+  .nav { gap: 14px; }
+}

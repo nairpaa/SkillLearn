@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"><style>body{margin:0;background:#F6F8F7;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#16211F;-webkit-font-smoothing:antialiased}a{color:#0E5E52;text-decoration:none}a:hover{color:#0B4D43}*{box-sizing:border-box}input,button,textarea{font-family:inherit}</style></helmet>
+<div data-screen-label="Web Quiz" style="min-height:100vh;background:#F6F8F7;display:flex;flex-direction:column">
+  <sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}"><dc-import name="StatusBlock" kind="{{ status }}" layout="detail" platform="web" on-retry="{{ retry }}" hint-size="100%,640px"></dc-import></sc-if>
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+  <div style="height:68px;background:#fff;border-bottom:1px solid #E3E8E6;padding:0 40px;display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:5">
+    <a href="Web - Course Detail.dc.html#c=react" style="font-size:14px;font-weight:600;color:#4A5856;width:120px">✕ Exit quiz</a>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><span style="font-size:15px;font-weight:700">Quiz: Components &amp; props</span><span style="font-size:12px;color:#4A5856">React Fundamentals · Lesson 5</span></div>
+    <span style="font:500 13px 'JetBrains Mono',monospace;color:#4A5856;width:120px;text-align:right">{{ stepLabel }}</span>
+  </div>
+  <div style="height:4px;background:#E3E8E6"><div style="width:{{ progressW }};height:4px;background:#0E5E52;transition:width .3s"></div></div>
+  <div style="flex:1;display:flex;justify-content:center;padding:56px 40px">
+    <sc-if value="{{ inProgress }}" hint-placeholder-val="{{ true }}">
+      <div style="width:100%;max-width:720px;display:flex;flex-direction:column;gap:24px">
+        <div style="font:500 12px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">{{ qLabel }}</div>
+        <div style="font-size:26px;font-weight:700;line-height:1.35;letter-spacing:-.01em;text-wrap:pretty">{{ question }}</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ opts }}" as="o" hint-placeholder-count="4">
+            <button onClick="{{ o.pick }}" style="cursor:pointer;text-align:left;min-height:60px;padding:14px 18px;border-radius:12px;background:{{ o.bg }};border:2px solid {{ o.border }};display:flex;align-items:center;gap:14px;color:#16211F">
+              <span style="width:30px;height:30px;flex:none;border-radius:8px;background:{{ o.keyBg }};color:{{ o.keyFg }};font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ o.key }}</span>
+              <span style="font-family:{{ o.font }};font-size:15px;font-weight:500">{{ o.text }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ answered }}" hint-placeholder-val="{{ false }}"><div style="padding:14px 18px;border-radius:12px;background:{{ fbBg }};color:{{ fbFg }};font-size:14px;font-weight:600;line-height:1.5">{{ fbText }}</div></sc-if>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button onClick="{{ next }}" disabled="{{ notAnswered }}" style="height:48px;padding:0 24px;border-radius:10px;border:0;background:{{ nextBg }};color:#fff;font-size:15px;font-weight:700;cursor:pointer">{{ nextLabel }}</button>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ finished }}" hint-placeholder-val="{{ false }}">
+      <div style="width:100%;max-width:560px;background:#fff;border:1px solid #E3E8E6;border-radius:18px;padding:40px;display:flex;flex-direction:column;gap:20px;align-self:flex-start">
+        <div style="font:500 12px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">QUIZ COMPLETE</div>
+        <div style="display:flex;align-items:baseline;gap:12px"><span style="font-size:56px;font-weight:800;letter-spacing:-.03em;color:#0E5E52">{{ score }}</span><span style="font-size:18px;font-weight:600;color:#4A5856">correct</span></div>
+        <div style="font-size:15px;color:#2E3A38;line-height:1.6">{{ verdict }}</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ review }}" as="r" hint-placeholder-count="3"><div style="display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:{{ r.bg }}"><span style="width:24px;height:24px;flex:none;border-radius:50%;background:{{ r.dot }};color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ r.mark }}</span><span style="font-size:14px;font-weight:500">{{ r.q }}</span></div></sc-for>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button onClick="{{ retry }}" style="height:46px;padding:0 18px;border-radius:10px;border:1px solid #D5DDDA;background:#fff;font-size:14px;font-weight:600;cursor:pointer;color:#16211F;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#F6F8F7;border-color:#B9C4C1">Retry quiz</button>
+          <a href="Web - Practice.dc.html#c=react" style="height:46px;padding:0 18px;border-radius:10px;background:#0E5E52;color:#fff;display:flex;align-items:center;font-size:14px;font-weight:700;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#0B4D43">Next: Practice →</a>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { D: null, i: 0, sel: null, answers: [] };
+  componentDidMount() { this.boot = () => import(new URL('sl-data.js', location.href).href).then(D => { this.setState({ D, status: 'loading' }); return D.load().then(() => this.setState({ status: 'ready' }), () => this.setState({ status: 'error' })); });
+    this.boot(); }
+  renderVals() {
+    const st = this.state.status || 'loading';
+    const base = { status: st, ready: st === 'ready', notReady: st !== 'ready', retry: () => { this.setState({ status: 'loading' }); this.boot(); } };
+    if (st !== 'ready' || !this.state.D) return base;
+    const v = this.vals();
+    if (v.__notfound) return { ...base, status: 'notfound', ready: false, notReady: true };
+    return { ...base, ...v };
+  }
+  vals() {
+    const D = this.state.D; if (!D) return {};
+    const Q = D.QUIZ, s = this.state, done = s.answers.length === Q.length;
+    const q = Q[Math.min(s.i, Q.length - 1)], answered = s.sel != null, ok = answered && s.sel === q.correct;
+    const opts = q.opts.map((text, i) => {
+      const on = s.sel === i, good = answered && i === q.correct, bad = on && !good;
+      return {
+        text, key: 'ABCD'[i], font: q.mono ? "'JetBrains Mono',monospace" : 'inherit',
+        pick: () => this.setState({ sel: i }),
+        bg: good ? '#E7F3F0' : bad ? '#FBE9E5' : '#fff', border: good ? '#0E5E52' : bad ? '#C2412D' : '#E3E8E6',
+        keyBg: good ? '#0E5E52' : bad ? '#C2412D' : '#EEF1F0', keyFg: good || bad ? '#fff' : '#16211F'
+      };
+    });
+    const score = s.answers.filter(Boolean).length;
+    return {
+      inProgress: !done, finished: done, opts, question: q.q, answered, notAnswered: !answered,
+      qLabel: 'QUESTION ' + (s.i + 1) + ' OF ' + Q.length,
+      stepLabel: done ? 'Done' : (s.i + 1) + ' / ' + Q.length,
+      progressW: ((done ? Q.length : s.i + (answered ? 1 : 0)) / Q.length * 100) + '%',
+      fbBg: ok ? '#E7F3F0' : '#FBE9E5', fbFg: ok ? '#0B4D43' : '#9A3322',
+      fbText: (ok ? 'Correct. ' : 'Not quite. ') + q.why,
+      nextBg: answered ? '#0E5E52' : '#9FB5B0',
+      nextLabel: s.i === Q.length - 1 ? 'See results' : 'Next question',
+      next: () => answered && this.setState({ answers: [...s.answers, ok], i: Math.min(s.i + 1, Q.length - 1), sel: null }),
+      score: score + '/' + Q.length,
+      verdict: score === Q.length ? 'Perfect score. You are ready for the practice lesson.' : 'Review the lesson on components and props, then try again or move on to practice.',
+      review: Q.map((x, i) => ({ q: x.q, mark: s.answers[i] ? '✓' : '✕', dot: s.answers[i] ? '#0E5E52' : '#C2412D', bg: s.answers[i] ? '#E7F3F0' : '#FBE9E5' })),
+      retry: () => this.setState({ i: 0, sel: null, answers: [] })
+    };
+  }
+}
+</script>
+</body>
+</html>

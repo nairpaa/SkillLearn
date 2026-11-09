@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"><style>body{margin:0;background:#E3E8E6;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#16211F;-webkit-font-smoothing:antialiased}a{color:#0E5E52;text-decoration:none}a:hover{color:#0B4D43}*{box-sizing:border-box}input,button,textarea{font-family:inherit}</style></helmet>
+<div data-screen-label="Mobile Profile" style="width:100%;max-width:390px;min-height:100vh;margin:0 auto;background:#F6F8F7;display:flex;flex-direction:column">
+  <sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}"><dc-import name="StatusBlock" kind="{{ status }}" layout="grid" platform="m" on-retry="{{ retry }}" hint-size="100%,640px"></dc-import></sc-if>
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+  <div style="height:50px;flex:none;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #16211F;border-radius:3px"></span></div>
+  <div style="flex:1;padding:8px 20px 28px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:24px;font-weight:800;letter-spacing:-.02em">Profile</span><a href="Mobile - Edit Profile.dc.html" style="font-size:14px;font-weight:700;min-height:44px;display:flex;align-items:center" style-active="opacity:.7">Edit</a></div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:64px;height:64px;border-radius:50%;background:#F2A93B;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center">{{ ini }}</div>
+      <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:18px;font-weight:700">{{ name }}</span><span style="font-size:13px;color:#4A5856">{{ email }}</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+      <sc-for list="{{ stats }}" as="s" hint-placeholder-count="3"><div style="padding:12px;border-radius:12px;background:#fff;border:1px solid #E3E8E6;display:flex;flex-direction:column;gap:2px"><span style="font-size:20px;font-weight:800">{{ s.v }}</span><span style="font-size:11px;color:#4A5856;font-weight:500;line-height:1.3">{{ s.k }}</span></div></sc-for>
+    </div>
+    <div style="height:44px;padding:4px;border-radius:12px;background:#E3E8E6;display:grid;grid-template-columns:1fr 1fr">
+      <sc-for list="{{ segs }}" as="g" hint-placeholder-count="2"><button onClick="{{ g.pick }}" style="border:0;border-radius:9px;background:{{ g.bg }};color:{{ g.color }};font-size:14px;font-weight:700" style-active="opacity:.7">{{ g.name }}</button></sc-for>
+    </div>
+    <sc-if value="{{ showFavList }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ favorites }}" as="c" hint-placeholder-count="3">
+          <div style="position:relative;background:#fff;border:1px solid #E3E8E6;border-radius:14px">
+            <a href="{{ c.href }}" style="padding:10px 52px 10px 10px;display:flex;gap:12px;align-items:center;color:#16211F" style-active="opacity:.7">
+              <span style="width:60px;height:60px;flex:none;border-radius:10px;background-color:{{ c.tint }};background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.4) 0 8px,transparent 8px 16px)"></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font-size:14px;font-weight:700;line-height:1.3">{{ c.title }}</span><span style="font-size:12px;color:#4A5856">{{ c.catName }}</span></span>
+            </a>
+            <button onClick="{{ c.toggle }}" title="Remove" style="position:absolute;right:6px;top:50%;margin-top:-22px;width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center" style-active="opacity:.7"><svg width="18" height="18" viewBox="0 0 24 24" fill="#0E5E52" stroke="#0E5E52" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg></button>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{ showFavEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px dashed #C9D3D0;border-radius:14px;padding:32px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+        <div style="width:48px;height:48px;border-radius:14px;background:#E7F3F0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E5E52" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg></div>
+        <span style="font-size:16px;font-weight:700">No favorites yet</span>
+        <span style="font-size:13px;color:#4A5856;line-height:1.5">Tap the bookmark on any course to keep it here.</span>
+        <a href="Mobile - Home.dc.html" style="margin-top:4px;height:44px;padding:0 18px;border-radius:12px;background:#0E5E52;color:#fff;display:flex;align-items:center;font-size:14px;font-weight:700" style-active="opacity:.7">Browse courses</a>
+      </div>
+    </sc-if>
+    <sc-if value="{{ showHistList }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E3E8E6;border-radius:14px;padding:4px 14px">
+        <sc-for list="{{ history }}" as="h" hint-placeholder-count="5">
+          <a href="{{ h.href }}" style="display:flex;gap:10px;padding:12px 0;border-bottom:1px solid #EEF1F0;align-items:center;color:#16211F;min-height:56px" style-active="opacity:.7">
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ h.title }}</span><span style="font-size:12px;color:#4A5856">{{ h.type }} · {{ h.courseTitle }}</span></span>
+            <span style="font-size:11px;color:#4A5856;flex:none">{{ h.when }}</span>
+          </a>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{ showHistEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px dashed #C9D3D0;border-radius:14px;padding:32px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+        <div style="width:48px;height:48px;border-radius:14px;background:#EEF1F0;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A5856" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2"></path></svg></div>
+        <span style="font-size:16px;font-weight:700">No learning history yet</span>
+        <span style="font-size:13px;color:#4A5856;line-height:1.5">Lessons you open will appear here, newest first.</span>
+        <a href="Mobile - Course Detail.dc.html#c=react" style="margin-top:4px;height:44px;padding:0 18px;border-radius:12px;border:1px solid #D5DDDA;color:#16211F;display:flex;align-items:center;font-size:14px;font-weight:700" style-active="opacity:.7">Start a course</a>
+      </div>
+    </sc-if>
+    <button onClick="{{ askLogout }}" style="height:48px;border-radius:12px;border:1px solid #E3E8E6;background:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#9A3322;margin-top:6px" style-active="opacity:.7">Log out</button>
+  </div>
+  </sc-if>
+  <dc-import name="MobileTabBar" active="profile" hint-size="100%,84px" style="position:sticky;bottom:0;z-index:10"></dc-import>
+<sc-if value="{{ confirmOpen }}" hint-placeholder-val="{{ false }}"><div onClick="{{ closeLogout }}" style="position:fixed;inset:0;z-index:50;background:rgba(22,33,31,.45);display:flex;align-items:flex-end;justify-content:center"><div role="dialog" aria-modal="true" onClick="{{ stop }}" style="width:100%;max-width:390px;background:#fff;border-radius:20px 20px 0 0;padding:12px 20px 34px;display:flex;flex-direction:column;gap:10px"><div style="width:40px;height:4px;border-radius:2px;background:#D5DDDA;align-self:center;margin-bottom:8px"></div><div style="font-size:20px;font-weight:800">Log out of SkillLearn?</div><div style="font-size:14px;line-height:1.55;color:#4A5856">Your progress and favorites stay saved. You'll need to log in again to keep learning.</div><button onClick="{{ doLogout }}" style="height:52px;margin-top:10px;border-radius:12px;border:0;background:#C2412D;color:#fff;font-size:16px;font-weight:700" style-active="opacity:.7">Log out</button><button onClick="{{ closeLogout }}" style="height:52px;border-radius:12px;border:1px solid #D5DDDA;background:#fff;font-size:16px;font-weight:600;color:#16211F" style-active="opacity:.7">Cancel</button></div></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;emptyState&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { D: null, favs: null, seg: 'fav' };
+  componentDidMount() { this.boot = () => import(new URL('sl-data.js', location.href).href).then(D => { this.setState({ D, favs: D.getFavs(), status: 'loading' }); return D.load().then(() => this.setState({ status: 'ready' }), () => this.setState({ status: 'error' })); });
+    this.boot(); }
+  renderVals() {
+    const st = this.state.status || 'loading';
+    const base = { status: st, ready: st === 'ready', notReady: st !== 'ready', retry: () => { this.setState({ status: 'loading' }); this.boot(); } };
+    if (st !== 'ready' || !this.state.D) return base;
+    const v = this.vals();
+    if (v.__notfound) return { ...base, status: 'notfound', ready: false, notReady: true };
+    return { ...base, ...v };
+  }
+  vals() {
+    const D = this.state.D; if (!D) return {};
+    const u = D.getUser(), empty = !!this.props.emptyState || !!u.isNew, seg = this.state.seg;
+    const favs = empty ? [] : D.COURSES.filter(c => this.state.favs.includes(c.id)).map(c => D.card('m', c, this.state.favs, (f) => this.setState({ favs: f })));
+    const hist = empty ? [] : D.history('m');
+    return {
+      confirmOpen: !!this.state.confirm, closeLogout: () => this.setState({ confirm: false }), stop: (e) => e.stopPropagation(),
+      doLogout: () => { D.logout(); location.href = 'Mobile - Splash.dc.html'; },
+      name: u.name, email: u.email, joined: u.joined || 'November 2026', ini: D.initials(u.name), askLogout: () => this.setState({ confirm: true }),
+      stats: empty ? [{ v: '0', k: 'In progress' }, { v: '0', k: 'Completed' }, { v: '–', k: 'Quiz average' }] : [{ v: '2', k: 'In progress' }, { v: '5', k: 'Completed' }, { v: '86%', k: 'Quiz average' }],
+      segs: [['fav', 'Favorites'], ['hist', 'History']].map(([id, name]) => ({ name, pick: () => this.setState({ seg: id }), bg: seg === id ? '#fff' : 'transparent', color: seg === id ? '#16211F' : '#4A5856' })),
+      favorites: favs, history: hist,
+      showFavList: seg === 'fav' && favs.length > 0, showFavEmpty: seg === 'fav' && favs.length === 0,
+      showHistList: seg === 'hist' && hist.length > 0, showHistEmpty: seg === 'hist' && hist.length === 0
+    };
+  }
+}
+</script>
+</body>
+</html>

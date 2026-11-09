@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#ECEFED;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#16211F;-webkit-font-smoothing:antialiased}a{color:#0E5E52;text-decoration:none}a:hover{color:#0B4D43;text-decoration:underline}*{box-sizing:border-box}.dv-turn{padding:48px 56px 40px;border-bottom:1px solid rgba(0,0,0,.08)}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 24px}.dv-tid{font:600 10px 'JetBrains Mono',monospace;padding:3px 7px;background:#16211F;color:#fff;border-radius:4px}.dv-tname{font:700 15px/1.2 'Plus Jakarta Sans',sans-serif;color:#16211F}.dv-opts{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px}.dv-oid{font:600 10.5px 'JetBrains Mono',monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#16211F;border-radius:5px}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:500 12px/1.3 'Plus Jakarta Sans',sans-serif;color:#4A5856}</style>
+</helmet>
+
+<section class="dv-turn" id="td">
+  <div class="dv-thd"><span class="dv-tid">DOCS</span><span class="dv-tname">Technical documentation</span></div>
+  <a href="SkillLearn Architecture and Security.dc.html" style="display:inline-flex;align-items:center;gap:12px;padding:16px 20px;border-radius:14px;background:#fff;border:1px solid #E3E8E6;color:#16211F;max-width:560px"><span style="width:40px;height:40px;border-radius:10px;background:#E7F3F0;display:flex;align-items:center;justify-content:center;font:500 12px 'JetBrains Mono',monospace;color:#0E5E52;flex:none">DOC</span><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:700">Architecture, App Flow, Security &amp; Deployment</span><span style="font-size:13px;color:#4A5856">PASETO auth, rate limits, anti-IDOR, injection, headers, free hosting. Printable to PDF.</span></span></a>
+</section>
+
+<section class="dv-turn" id="ts">
+  <div class="dv-thd"><span class="dv-tid">STATES</span><span class="dv-tname">State reference — every page, for Figma &amp; dev handoff</span></div>
+  <div class="dv-opts">
+    <div class="dv-opt" id="s1"><div class="dv-olabel"><span class="dv-oid">S1</span>Loading — skeleton (data pages)</div><div style="width:390px;background:#F6F8F7;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden"><dc-import name="StatusBlock" kind="loading" layout="grid" platform="m" hint-size="390px,560px"></dc-import></div></div>
+    <div class="dv-opt" id="s2"><div class="dv-olabel"><span class="dv-oid">S2</span>Error — API unreachable</div><div style="width:390px;background:#F6F8F7;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden"><dc-import name="StatusBlock" kind="error" layout="grid" platform="m" hint-size="390px,560px"></dc-import></div></div>
+    <div class="dv-opt" id="s3"><div class="dv-olabel"><span class="dv-oid">S3</span>Not found — bad course / category id</div><div style="width:390px;background:#F6F8F7;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden"><dc-import name="StatusBlock" kind="notfound" layout="grid" platform="m" hint-size="390px,560px"></dc-import></div></div>
+    <div class="dv-opt" id="s4"><div class="dv-olabel"><span class="dv-oid">S4</span>Field validation</div><div style="width:360px;background:#F6F8F7;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden"><div style="padding:20px;display:flex;flex-direction:column;gap:12px"><label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Email</span><span style="height:48px;border:1px solid #C2412D;background:#FFF8F6;border-radius:10px;padding:0 14px;font-size:15px;display:flex;align-items:center">alya@student</span><span style="font-size:12px;font-weight:600;color:#C2412D">Enter a valid email, e.g. name@student.ac.id.</span></label><label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:600">Confirm password</span><span style="height:48px;border:1px solid #C2412D;background:#FFF8F6;border-radius:10px;padding:0 14px;font-size:16px;letter-spacing:.2em;display:flex;align-items:center">•••••••</span><span style="font-size:12px;font-weight:600;color:#C2412D">Passwords don't match.</span></label></div></div></div>
+    <div class="dv-opt" id="s5"><div class="dv-olabel"><span class="dv-oid">S5</span>Button: default / hover / busy</div><div style="width:360px;background:#F6F8F7;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden"><div style="padding:20px;display:flex;flex-direction:column;gap:12px"><div style="height:48px;border-radius:10px;background:#0E5E52;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center">Log in</div><div style="height:48px;border-radius:10px;background:#0B4D43;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center">Log in <span style="font:500 11px 'JetBrains Mono',monospace;margin-left:8px;opacity:.7">HOVER</span></div><div style="height:48px;border-radius:10px;background:#4F8C82;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:10px"><span style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff"></span>Logging in…</div><div style="font-size:12px;color:#4A5856;line-height:1.5">Default · Hover (web) / Pressed (mobile) · Busy: disabled while the request runs.</div></div></div></div>
+    <div class="dv-opt" id="s6"><div class="dv-olabel"><span class="dv-oid">S6</span>Form banners</div><div style="width:360px;background:#F6F8F7;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden"><div style="padding:20px;display:flex;flex-direction:column;gap:12px"><div style="padding:12px 14px;border-radius:10px;background:#FBE9E5;color:#9A3322;font-size:13px;font-weight:600;line-height:1.5">Email or password is incorrect. Check both and try again.</div><div style="padding:12px 14px;border-radius:10px;background:#FBE9E5;color:#9A3322;font-size:13px;font-weight:600;line-height:1.5">Too many attempts. Try again in 15 minutes.</div><div style="padding:12px 14px;border-radius:10px;background:#FBF3DF;border:1px solid #F0E2B8;color:#5E420C;font-size:13px;font-weight:600;line-height:1.5">Your session expired. Log in again to continue where you left off.</div><div style="padding:12px 14px;border-radius:10px;background:#0E5E52;color:#fff;font-size:13px;font-weight:600">Profile updated.</div></div></div></div>
+    <div class="dv-opt" id="s7"><div class="dv-olabel"><span class="dv-oid">S7</span>Toast with Undo</div><div style="width:360px;background:#F6F8F7;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden"><div style="padding:20px;display:flex;flex-direction:column;gap:12px"><div style="background:#16211F;color:#fff;border-radius:12px;padding:10px 10px 10px 16px;display:flex;align-items:center;gap:16px;font-size:14px;font-weight:600"><span style="flex:1">Saved to favorites</span><span style="color:#F2A93B;font-weight:700;padding:0 10px">Undo</span></div><div style="background:#16211F;color:#fff;border-radius:12px;padding:10px 10px 10px 16px;display:flex;align-items:center;gap:16px;font-size:14px;font-weight:600"><span style="flex:1">Removed from favorites</span><span style="color:#F2A93B;font-weight:700;padding:0 10px">Undo</span></div><div style="font-size:12px;color:#4A5856">Auto-dismiss after 3.5s. Web: bottom-left. Mobile: above tab bar.</div></div></div></div>
+    <div class="dv-opt" id="s8"><div class="dv-olabel"><span class="dv-oid">S8</span>Logout confirmation</div><div style="width:360px;background:#F6F8F7;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden"><div style="background:rgba(22,33,31,.45);padding:40px 20px;display:flex;justify-content:center"><div style="width:100%;background:#fff;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:10px"><div style="font-size:19px;font-weight:800">Log out of SkillLearn?</div><div style="font-size:14px;line-height:1.55;color:#4A5856">Your progress and favorites stay saved to your account.</div><div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px"><span style="height:42px;padding:0 16px;border-radius:10px;border:1px solid #D5DDDA;background:#fff;display:flex;align-items:center;font-size:14px;font-weight:600">Cancel</span><span style="height:42px;padding:0 16px;border-radius:10px;background:#C2412D;color:#fff;display:flex;align-items:center;font-size:14px;font-weight:700">Log out</span></div></div></div></div></div>
+    <div class="dv-opt" id="s9"><div class="dv-olabel"><span class="dv-oid">S9</span>New user (after verify + first login)</div><div style="width:360px;background:#F6F8F7;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden"><div style="padding:20px;display:flex;flex-direction:column;gap:12px"><div style="font-size:24px;font-weight:800;letter-spacing:-.02em">Good morning, Budi</div><div style="font-size:14px;color:#4A5856">Your account is ready. Pick a course to get started.</div><div style="background:#FBF3DF;border:1px solid #F0E2B8;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px"><span style="font:500 10px 'JetBrains Mono',monospace;color:#7A5510;letter-spacing:.08em">GET STARTED</span><span style="font-size:17px;font-weight:700">Start your first course</span><span style="font-size:13px;color:#5E420C">React Fundamentals: 12 short lessons for beginners.</span><span style="align-self:flex-start;height:38px;padding:0 14px;border-radius:9px;background:#0E5E52;color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center">Start course</span></div><div style="font-size:12px;color:#4A5856">After first login: no progress, Favorites and History empty, initials from the registered name.</div></div></div></div>
+    <div class="dv-opt" id="s10"><div class="dv-olabel"><span class="dv-oid">S10</span>Empty states</div><div style="width:360px;background:#F6F8F7;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden"><div style="padding:20px;display:flex;flex-direction:column;gap:12px"><div style="background:#fff;border:1px dashed #C9D3D0;border-radius:12px;padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center"><span style="font-size:15px;font-weight:700">No favorites yet</span><span style="font-size:13px;color:#4A5856">Tap the bookmark on any course to keep it here.</span><span style="height:38px;padding:0 14px;border-radius:10px;background:#0E5E52;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center">Browse courses</span></div><div style="background:#fff;border:1px dashed #C9D3D0;border-radius:12px;padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center"><span style="font-size:15px;font-weight:700">No results for “kotlin”</span><span style="font-size:13px;color:#4A5856">Try a shorter keyword or browse a category.</span></div></div></div></div>
+  </div>
+  <div style="font-size:15px;font-weight:700;margin:32px 0 14px">State inventory</div>
+  <div style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden;max-width:1320px"><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);background:#16211F;color:#fff;font-size:12px;font-weight:700;letter-spacing:.04em"><div style="padding:12px 16px">PAGE (WEB + MOBILE)</div><div style="padding:12px 16px">STATES</div><div style="padding:12px 16px">HOW TO SEE IT IN THE PROTOTYPE</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Login</div><div style="padding:12px 16px;color:#2E3A38">Default · Field error · Busy · Invalid credentials · Rate limited · Session expired</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Submit empty / wrong@student.ac.id (5× = rate limit) / #expired=1</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Register</div><div style="padding:12px 16px;color:#2E3A38">Default · Field errors · Password strength · Busy · Check inbox (same response for new and existing email)</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Submit empty / valid form, then log in with that email</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Forgot Password</div><div style="padding:12px 16px;color:#2E3A38">Default · Field error · Busy · Sent · Resend cooldown (30s)</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Submit, then tap Resend</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Home</div><div style="padding:12px 16px;color:#2E3A38">Loading · Error · Returning user · New user</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Add #error=1 / register a new account</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Search</div><div style="padding:12px 16px;color:#2E3A38">Loading · Error · Results · Type filter · No results</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Type "kotlin"</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Category</div><div style="padding:12px 16px;color:#2E3A38">Loading · Error · Not found</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Use #c=unknown</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Course Detail</div><div style="padding:12px 16px;color:#2E3A38">Loading · Error · Not found · Not started · In progress · Saved / not saved · Playing</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Use #c=xyz, #c=seo, #c=react</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Article</div><div style="padding:12px 16px;color:#2E3A38">Loading · Error · Copy code → Copied</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Tap Copy</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Quiz</div><div style="padding:12px 16px;color:#2E3A38">Loading · Error · Unanswered (Next disabled) · Correct · Wrong · Results</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Answer questions</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Practice</div><div style="padding:12px 16px;color:#2E3A38">Loading · Error · Tasks partial · Run → Preview · Hint · Submit blocked · Submitted</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Toggle tasks, Run, Submit</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Profile</div><div style="padding:12px 16px;color:#2E3A38">Loading · Error · Filled · Favorites empty · History empty · Logout confirm</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">emptyState tweak / unsave all / tap Log out</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Edit Profile</div><div style="padding:12px 16px;color:#2E3A38">Prefilled · Field errors · Busy · Saved</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Clear the name, then Save</div></div><div style="display:grid;grid-template-columns:180px minmax(0,1.6fr) minmax(0,1fr);border-top:1px solid #EEF1F0;font-size:13px;line-height:1.5"><div style="padding:12px 16px;font-weight:700">Global</div><div style="padding:12px 16px;color:#2E3A38">Toast (save / remove + Undo) · Hover (web) · Pressed (mobile)</div><div style="padding:12px 16px;color:#4A5856;font-family:'JetBrains Mono',monospace;font-size:12px">Bookmark any course</div></div></div>
+</section>
+
+<section class="dv-turn" id="tp">
+  <div class="dv-thd"><span class="dv-tid">PAGES</span><span class="dv-tname">Full pages — clickable prototype, one file per page</span></div>
+  <div style="display:flex;flex-direction:column;gap:18px;max-width:1320px">
+    <div style="display:flex;flex-direction:column;gap:10px"><span style="font:500 11px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">WEB · START AT LOGIN</span><div style="display:flex;flex-wrap:wrap;gap:8px"><a href="Web - Login.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Login</a><a href="Web - Register.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Register</a><a href="Web - Forgot Password.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Forgot Password</a><a href="Web - Home.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Home</a><a href="Web - Search.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Search</a><a href="Web - Category.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Category</a><a href="Web - Course Detail.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Course Detail</a><a href="Web - Article.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Article</a><a href="Web - Quiz.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Quiz</a><a href="Web - Practice.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Practice</a><a href="Web - Profile.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Profile</a><a href="Web - Edit Profile.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Edit Profile</a></div></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><span style="font:500 11px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">MOBILE · START AT SPLASH</span><div style="display:flex;flex-wrap:wrap;gap:8px"><a href="Mobile - Splash.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Splash</a><a href="Mobile - Login.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Login</a><a href="Mobile - Register.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Register</a><a href="Mobile - Forgot Password.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Forgot Password</a><a href="Mobile - Home.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Home</a><a href="Mobile - Search.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Search</a><a href="Mobile - Category.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Category</a><a href="Mobile - Course Detail.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Course Detail</a><a href="Mobile - Article.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Article</a><a href="Mobile - Quiz.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Quiz</a><a href="Mobile - Practice.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Practice</a><a href="Mobile - Profile.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Profile</a><a href="Mobile - Edit Profile.dc.html" style="padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#16211F">Edit Profile</a></div></div>
+    <div style="font-size:13px;color:#4A5856;line-height:1.5">Profile pages have an "emptyState" tweak to show empty Favorites and History. Favorites saved on any page persist across pages.</div>
+  </div>
+</section>
+
+<section class="dv-turn" id="t0">
+  <div class="dv-thd"><span class="dv-tid">00</span><span class="dv-tname">SkillLearn — Foundations</span></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:1320px">
+    <div style="background:#fff;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:20px">
+      <div style="font:500 11px 'JetBrains Mono',monospace;color:#4A5856;text-transform:uppercase;letter-spacing:.08em">Logo</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <svg width="48" height="48" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#0E5E52"></rect><path d="M8 23h5v-5h5v-5h5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg>
+        <div style="font-size:28px;font-weight:800;letter-spacing:-.02em">Skill<span style="color:#0E5E52">Learn</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:64px;height:64px;border-radius:14px;background:#0E5E52;display:flex;align-items:center;justify-content:center"><svg width="40" height="40" viewBox="0 0 32 32"><path d="M8 23h5v-5h5v-5h5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg></div>
+        <div style="width:64px;height:64px;border-radius:14px;background:#F6F8F7;border:1px solid #E3E8E6;display:flex;align-items:center;justify-content:center"><svg width="40" height="40" viewBox="0 0 32 32"><path d="M8 23h5v-5h5v-5h5" stroke="#0E5E52" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg></div>
+      </div>
+      <div style="font-size:13px;line-height:1.5;color:#4A5856;text-wrap:pretty">A rising step path: each step is a skill learned, the amber dot is the goal.</div>
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:16px">
+      <div style="font:500 11px 'JetBrains Mono',monospace;color:#4A5856;text-transform:uppercase;letter-spacing:.08em">Color</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <sc-for list="{{ palette }}" as="p" hint-placeholder-count="8">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="height:48px;border-radius:10px;background:{{ p.hex }};border:1px solid #E3E8E6"></div>
+            <div style="font-size:11px;font-weight:600">{{ p.name }}</div>
+            <div style="font:500 10px 'JetBrains Mono',monospace;color:#4A5856">{{ p.hex }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:14px">
+      <div style="font:500 11px 'JetBrains Mono',monospace;color:#4A5856;text-transform:uppercase;letter-spacing:.08em">Type — Plus Jakarta Sans</div>
+      <div style="font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1.1">Display 32/800</div>
+      <div style="font-size:22px;font-weight:700;letter-spacing:-.01em">Heading 22/700</div>
+      <div style="font-size:16px;font-weight:600">Title 16/600</div>
+      <div style="font-size:14px;color:#4A5856">Body 14/400 — muted text on white</div>
+      <div style="font:500 11px 'JetBrains Mono',monospace;color:#4A5856;text-transform:uppercase;letter-spacing:.08em">Label — JetBrains Mono 11</div>
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <div style="height:44px;padding:0 20px;border-radius:10px;background:#0E5E52;color:#fff;font-weight:600;font-size:14px;display:flex;align-items:center">Primary</div>
+        <div style="height:44px;padding:0 20px;border-radius:10px;border:1px solid #D5DDDA;color:#16211F;font-weight:600;font-size:14px;display:flex;align-items:center">Secondary</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dv-turn" id="tf">
+  <div class="dv-thd"><span class="dv-tid">FLOW</span><span class="dv-tname">App flow — web &amp; mobile</span></div>
+  <div data-screen-label="App flow" style="max-width:1320px;background:#fff;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:24px">
+    <div style="display:grid;grid-template-columns:1fr 32px 1fr 32px 1fr 32px 1fr 32px 1.2fr;align-items:center;gap:8px">
+      <div style="border:1px solid #E3E8E6;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px"><span style="font:500 10px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">1 · ENTRY</span><span style="font-size:15px;font-weight:700">Splash / Welcome</span><span style="font-size:12px;color:#4A5856">Mobile only. Web opens on Login.</span><div style="display:flex;gap:6px"><a class="dv-oid" href="#m0">M0</a></div></div>
+      <span style="font-size:20px;color:#4A5856;text-align:center">→</span>
+      <div style="border:1px solid #E3E8E6;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px"><span style="font:500 10px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">2 · AUTH</span><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:700">Login</span><div style="display:flex;gap:6px"><a class="dv-oid" href="#w2">W2</a><a class="dv-oid" href="#m1">M1</a></div></div><span style="font-size:13px;color:#4A5856">⇅</span><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:700">Register</span><div style="display:flex;gap:6px"><a class="dv-oid" href="#w1">W1</a><a class="dv-oid" href="#m2">M2</a></div></div></div>
+      <span style="font-size:20px;color:#4A5856;text-align:center">→</span>
+      <div style="border:2px solid #0E5E52;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px"><span style="font:500 10px 'JetBrains Mono',monospace;color:#0E5E52;letter-spacing:.08em">3 · HOME</span><span style="font-size:15px;font-weight:700">Home</span><span style="font-size:12px;color:#4A5856">Continue learning, categories, course list</span><div style="display:flex;gap:6px"><a class="dv-oid" href="#w3">W3</a><a class="dv-oid" href="#m3">M3</a></div></div>
+      <span style="font-size:20px;color:#4A5856;text-align:center">→</span>
+      <div style="border:1px solid #E3E8E6;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px"><span style="font:500 10px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">4 · DETAIL</span><span style="font-size:15px;font-weight:700">Course detail</span><span style="font-size:12px;color:#4A5856">Lesson list, save to favorites</span><div style="display:flex;gap:6px"><a class="dv-oid" href="#w4">W4</a><a class="dv-oid" href="#m4">M4</a></div></div>
+      <span style="font-size:20px;color:#4A5856;text-align:center">→</span>
+      <div style="border:1px solid #E3E8E6;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px"><span style="font:500 10px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">5 · LESSON TYPES</span>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px;font-weight:700">Video</span><div style="display:flex;gap:6px"><a class="dv-oid" href="#w4">W4</a><a class="dv-oid" href="#m4">M4</a></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px;font-weight:700">Article</span><div style="display:flex;gap:6px"><a class="dv-oid" href="#w7">W7</a><a class="dv-oid" href="#m7">M7</a></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px;font-weight:700">Quiz</span><div style="display:flex;gap:6px"><a class="dv-oid" href="#w5">W5</a><a class="dv-oid" href="#m5">M5</a></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px;font-weight:700">Practice</span><div style="display:flex;gap:6px"><a class="dv-oid" href="#w8">W8</a></div></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div style="border:1px solid #E3E8E6;border-radius:12px;padding:16px;display:flex;gap:16px;align-items:center"><div style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font:500 10px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">FROM ANY SCREEN · NAV / TAB BAR</span><span style="font-size:15px;font-weight:700">Profile — Favorites &amp; History</span><span style="font-size:12px;color:#4A5856">Web: Favorites / History in the top nav. Mobile: Profile tab.</span></div><div style="display:flex;gap:6px"><a class="dv-oid" href="#w6">W6</a><a class="dv-oid" href="#m6">M6</a></div></div>
+      <div style="border-radius:12px;padding:16px;background:#FBF3DF;display:flex;flex-direction:column;gap:4px"><span style="font:500 10px 'JetBrains Mono',monospace;color:#7A5510;letter-spacing:.08em">AUTH GUARD</span><span style="font-size:14px;line-height:1.5;color:#16211F;text-wrap:pretty">Steps 3–5 and Profile require login. Without a valid token (JWT from the Express API), the app redirects to Login. Logout returns to Login (web) or Splash (mobile).</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><span class="dv-tid">WEB</span><span class="dv-tname">Web app — React · 1280px</span></div>
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="w1"><div class="dv-olabel"><span class="dv-oid">W1</span>Register</div>
+      <div data-screen-label="W1 Register" style="width:1280px;height:820px;background:#fff;border-radius:12px;overflow:hidden;display:grid;grid-template-columns:520px 1fr;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+        <div style="background:#0E5E52;color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
+          <div style="display:flex;align-items:center;gap:10px"><svg width="34" height="34" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#fff"></rect><path d="M8 23h5v-5h5v-5h5" stroke="#0E5E52" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg><span style="font-size:20px;font-weight:800">SkillLearn</span></div>
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div style="font-size:40px;font-weight:800;line-height:1.1;letter-spacing:-.02em;text-wrap:pretty">Practical skills, outside the classroom.</div>
+            <div style="font-size:16px;line-height:1.6;color:#CFE6E0;max-width:380px">Articles, video tutorials, quizzes and hands-on practice in four fields.</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ categories }}" as="c" hint-placeholder-count="4"><span style="padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.3);font-size:13px;font-weight:500">{{ c.name }}</span></sc-for>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#CFE6E0">© 2026 SkillLearn</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center">
+          <div style="width:400px;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:28px;font-weight:800;letter-spacing:-.02em">Create your account</div><div style="font-size:14px;color:#4A5856">Register to access all materials and track your progress.</div></div>
+            <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Full name</div><div style="height:46px;border:1px solid #D5DDDA;border-radius:10px;padding:0 14px;display:flex;align-items:center;font-size:14px">Alya Rahma</div></div>
+            <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Email</div><div style="height:46px;border:1px solid #D5DDDA;border-radius:10px;padding:0 14px;display:flex;align-items:center;font-size:14px">alya@student.ac.id</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Password</div><div style="height:46px;border:2px solid #0E5E52;border-radius:10px;padding:0 13px;display:flex;align-items:center;font-size:16px;letter-spacing:.2em">••••••••</div></div>
+              <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Confirm password</div><div style="height:46px;border:1px solid #D5DDDA;border-radius:10px;padding:0 14px;display:flex;align-items:center;font-size:14px;color:#8A9693">Repeat password</div></div>
+            </div>
+            <div style="font-size:12px;color:#4A5856">At least 8 characters, with one number.</div>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#4A5856"><span style="width:18px;height:18px;border-radius:5px;background:#0E5E52;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center">✓</span>I agree to the Terms and Privacy Policy</div>
+            <div style="height:48px;border-radius:10px;background:#0E5E52;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center">Create account</div>
+            <div style="font-size:14px;color:#4A5856;text-align:center">Already have an account? <a href="#w2" style="font-weight:700">Log in</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="w2"><div class="dv-olabel"><span class="dv-oid">W2</span>Login</div>
+      <div data-screen-label="W2 Login" style="width:1280px;height:820px;background:#fff;border-radius:12px;overflow:hidden;display:grid;grid-template-columns:520px 1fr;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+        <div style="background:#0E5E52;color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:10px"><svg width="34" height="34" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#fff"></rect><path d="M8 23h5v-5h5v-5h5" stroke="#0E5E52" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg><span style="font-size:20px;font-weight:800">SkillLearn</span></div>
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div style="font-size:40px;font-weight:800;line-height:1.1;letter-spacing:-.02em;text-wrap:pretty">Learn a new skill, one step at a time.</div>
+            <div style="display:flex;flex-direction:column;gap:12px;max-width:380px;font-size:15px;color:#CFE6E0">
+              <div style="display:flex;gap:10px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#F2A93B"></span>Articles and video tutorials</div>
+              <div style="display:flex;gap:10px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#F2A93B"></span>Quizzes and hands-on practice</div>
+              <div style="display:flex;gap:10px;align-items:center"><span style="width:8px;height:8px;border-radius:50%;background:#F2A93B"></span>Save favorites, track your history</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#CFE6E0">© 2026 SkillLearn</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center">
+          <div style="width:400px;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:28px;font-weight:800;letter-spacing:-.02em">Welcome back</div><div style="font-size:14px;color:#4A5856">Log in to continue learning.</div></div>
+            <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Email</div><div style="height:46px;border:1px solid #D5DDDA;border-radius:10px;padding:0 14px;display:flex;align-items:center;font-size:14px">alya@student.ac.id</div></div>
+            <div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between"><span style="font-size:13px;font-weight:600">Password</span><a href="#w2" style="font-size:13px;font-weight:600">Forgot password?</a></div><div style="height:46px;border:1px solid #D5DDDA;border-radius:10px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;font-size:16px;letter-spacing:.2em"><span>••••••••</span><span style="font-size:12px;letter-spacing:0;font-weight:600;color:#4A5856">Show</span></div></div>
+            <div style="height:48px;border-radius:10px;background:#0E5E52;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;margin-top:4px">Log in</div>
+            <div style="font-size:14px;color:#4A5856;text-align:center">New to SkillLearn? <a href="#w1" style="font-weight:700">Create an account</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="w3"><div class="dv-olabel"><span class="dv-oid">W3</span>Home</div>
+      <div data-screen-label="W3 Home" style="width:1280px;background:#F6F8F7;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+        <div style="height:68px;background:#fff;border-bottom:1px solid #E3E8E6;padding:0 40px;display:flex;align-items:center;gap:32px">
+          <div style="display:flex;align-items:center;gap:10px"><svg width="30" height="30" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#0E5E52"></rect><path d="M8 23h5v-5h5v-5h5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg><span style="font-size:18px;font-weight:800">SkillLearn</span></div>
+          <div style="display:flex;gap:24px;font-size:14px;font-weight:600;color:#4A5856"><a href="#w3" style="color:#0E5E52">Home</a><a href="#w6" style="color:#4A5856">Favorites</a><a href="#w6" style="color:#4A5856">History</a></div>
+          <div style="flex:1"></div>
+          <div style="width:320px;height:40px;border-radius:10px;background:#F6F8F7;border:1px solid #E3E8E6;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:14px;color:#8A9693"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A5856" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>Search courses, topics…</div>
+          <div style="width:38px;height:38px;border-radius:50%;background:#F2A93B;color:#16211F;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center">AR</div>
+        </div>
+        <div style="padding:36px 40px 48px;display:flex;flex-direction:column;gap:36px">
+          <div style="display:grid;grid-template-columns:1fr 440px;gap:24px;align-items:stretch">
+            <div style="display:flex;flex-direction:column;justify-content:center;gap:10px">
+              <div style="font-size:34px;font-weight:800;letter-spacing:-.02em">Good morning, Alya</div>
+              <div style="font-size:16px;color:#4A5856">You have 3 courses in progress. Keep your streak going.</div>
+            </div>
+            <div style="background:#0E5E52;color:#fff;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px">
+              <div style="font:500 11px 'JetBrains Mono',monospace;color:#CFE6E0;letter-spacing:.08em">CONTINUE LEARNING</div>
+              <div style="font-size:18px;font-weight:700">React Fundamentals</div>
+              <div style="font-size:13px;color:#CFE6E0">Next: Lesson 3 · Components &amp; props (14 min)</div>
+              <div style="display:flex;align-items:center;gap:12px"><div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.2)"><div style="width:64%;height:6px;border-radius:3px;background:#F2A93B"></div></div><span style="font-size:13px;font-weight:700">64%</span></div>
+              <a href="#w4" style="align-self:flex-start;height:38px;padding:0 16px;border-radius:9px;background:#fff;color:#0E5E52;font-size:14px;font-weight:700;display:flex;align-items:center;text-decoration:none">Resume</a>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font-size:22px;font-weight:700;letter-spacing:-.01em">Popular courses</div>
+              <div style="display:flex;gap:8px">
+                <span style="padding:8px 14px;border-radius:999px;background:#16211F;color:#fff;font-size:13px;font-weight:600">All</span>
+                <sc-for list="{{ categories }}" as="c" hint-placeholder-count="4"><span style="padding:8px 14px;border-radius:999px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#4A5856">{{ c.name }}</span></sc-for>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+              <sc-for list="{{ courses }}" as="c" hint-placeholder-count="6">
+                <div style="background:#fff;border:1px solid #E3E8E6;border-radius:14px;overflow:hidden;display:flex;flex-direction:column">
+                  <div style="height:150px;background-color:{{ c.tint }};background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.4) 0 10px,transparent 10px 20px);padding:12px;display:flex;justify-content:space-between;align-items:flex-start">
+                    <span style="padding:5px 10px;border-radius:999px;background:#fff;color:{{ c.fg }};font-size:12px;font-weight:700">{{ c.cat }}</span>
+                    <span style="width:32px;height:32px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="{{ c.favFill }}" stroke="{{ c.favStroke }}" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg></span>
+                  </div>
+                  <div style="padding:16px;display:flex;flex-direction:column;gap:8px">
+                    <div style="font-size:16px;font-weight:700;line-height:1.35;text-wrap:pretty">{{ c.title }}</div>
+                    <div style="font-size:13px;color:#4A5856">{{ c.meta }}</div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px"><span style="font-weight:600;color:#4A5856">{{ c.level }}</span><span style="font-weight:700">★ {{ c.rating }}</span></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="w4"><div class="dv-olabel"><span class="dv-oid">W4</span>Course detail</div>
+      <div data-screen-label="W4 Detail" style="width:1280px;background:#F6F8F7;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+        <div style="height:68px;background:#fff;border-bottom:1px solid #E3E8E6;padding:0 40px;display:flex;align-items:center;gap:32px">
+          <div style="display:flex;align-items:center;gap:10px"><svg width="30" height="30" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#0E5E52"></rect><path d="M8 23h5v-5h5v-5h5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg><span style="font-size:18px;font-weight:800">SkillLearn</span></div>
+          <div style="display:flex;gap:24px;font-size:14px;font-weight:600;color:#4A5856"><a href="#w3" style="color:#0E5E52">Home</a><a href="#w6" style="color:#4A5856">Favorites</a><a href="#w6" style="color:#4A5856">History</a></div>
+          <div style="flex:1"></div>
+          <div style="width:38px;height:38px;border-radius:50%;background:#F2A93B;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center">AR</div>
+        </div>
+        <div style="padding:28px 40px 48px;display:flex;flex-direction:column;gap:20px">
+          <div style="font-size:13px;color:#4A5856;font-weight:500">Home / Programming / <span style="color:#16211F;font-weight:600">React Fundamentals</span></div>
+          <div style="display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start">
+            <div style="display:flex;flex-direction:column;gap:20px">
+              <div style="height:450px;border-radius:16px;background-color:#16211F;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 12px,transparent 12px 24px);position:relative;display:flex;align-items:center;justify-content:center">
+                <div style="width:72px;height:72px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="#0E5E52"><path d="M7 4v16l13-8z"></path></svg></div>
+                <div style="position:absolute;left:16px;top:16px;font:500 11px 'JetBrains Mono',monospace;color:#8A9693">VIDEO PLAYER</div>
+                <div style="position:absolute;left:20px;right:20px;bottom:18px;display:flex;align-items:center;gap:12px;color:#fff;font-size:12px;font-weight:600"><span>04:12</span><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.25)"><div style="width:30%;height:4px;border-radius:2px;background:#F2A93B"></div></div><span>14:00</span></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="font:500 11px 'JetBrains Mono',monospace;color:#1F4E8C;letter-spacing:.08em">LESSON 3 · VIDEO</div>
+                  <div style="font-size:28px;font-weight:800;letter-spacing:-.02em">Components &amp; props</div>
+                  <div style="font-size:14px;color:#4A5856">React Fundamentals · Rizky Pratama · Beginner</div>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <div style="height:42px;padding:0 16px;border-radius:10px;border:1px solid #D5DDDA;background:#fff;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600"><svg width="16" height="16" viewBox="0 0 24 24" fill="#0E5E52" stroke="#0E5E52" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg>Saved</div>
+                  <div style="height:42px;padding:0 18px;border-radius:10px;background:#0E5E52;color:#fff;display:flex;align-items:center;font-size:14px;font-weight:700">Mark complete</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:28px;border-bottom:1px solid #E3E8E6;font-size:14px;font-weight:600;color:#4A5856">
+                <span style="padding-bottom:12px;border-bottom:2px solid #0E5E52;color:#16211F">Overview</span><span style="padding-bottom:12px">Article notes</span><span style="padding-bottom:12px">Resources</span>
+              </div>
+              <div style="font-size:15px;line-height:1.7;color:#2E3A38;max-width:720px;text-wrap:pretty">Components let you split the UI into independent, reusable pieces. In this lesson you'll build a Card component, pass data into it with props, and render a list of cards from an array.</div>
+            </div>
+            <div style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden">
+              <div style="padding:20px;border-bottom:1px solid #E3E8E6;display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:16px;font-weight:700">Course content</div>
+                <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:6px;border-radius:3px;background:#E3E8E6"><div style="width:64%;height:6px;border-radius:3px;background:#0E5E52"></div></div><span style="font-size:13px;font-weight:700">64%</span></div>
+                <div style="font-size:13px;color:#4A5856">12 lessons · 3h 20m</div>
+              </div>
+              <sc-for list="{{ lessons }}" as="l" hint-placeholder-count="6">
+                <div style="padding:14px 20px;display:flex;gap:12px;align-items:center;background:{{ l.rowBg }};border-bottom:1px solid #EEF1F0">
+                  <span style="width:28px;height:28px;flex:none;border-radius:50%;background:{{ l.numBg }};color:{{ l.numFg }};font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ l.mark }}</span>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ l.title }}</span><span style="font-size:12px;color:#4A5856">{{ l.type }} · {{ l.dur }}</span></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="w5"><div class="dv-olabel"><span class="dv-oid">W5</span>Quiz (click an answer)</div>
+      <div data-screen-label="W5 Quiz" style="width:1280px;height:820px;background:#F6F8F7;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);display:flex;flex-direction:column">
+        <div style="height:68px;background:#fff;border-bottom:1px solid #E3E8E6;padding:0 40px;display:flex;align-items:center;gap:20px">
+          <span style="font-size:14px;font-weight:600;color:#4A5856">✕ Exit quiz</span>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><span style="font-size:15px;font-weight:700">Quiz: Components &amp; props</span><span style="font-size:12px;color:#4A5856">React Fundamentals</span></div>
+          <span style="font:500 13px 'JetBrains Mono',monospace;color:#4A5856">08:42</span>
+        </div>
+        <div style="height:4px;background:#E3E8E6"><div style="width:30%;height:4px;background:#0E5E52"></div></div>
+        <div style="flex:1;display:flex;justify-content:center;padding:56px 40px">
+          <div style="width:720px;display:flex;flex-direction:column;gap:24px">
+            <div style="font:500 12px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">QUESTION 3 OF 10</div>
+            <div style="font-size:26px;font-weight:700;line-height:1.35;letter-spacing:-.01em;text-wrap:pretty">How do you pass a value named <code style="font-family:'JetBrains Mono',monospace;font-size:.88em;background:#FBF3DF;color:#7A5510;border:1px solid #F0E2B8;padding:1px 6px;border-radius:6px">title</code> to a Card component?</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ quizOpts }}" as="o" hint-placeholder-count="4">
+                <div onClick="{{ o.pick }}" style="cursor:pointer;min-height:60px;padding:14px 18px;border-radius:12px;background:{{ o.bg }};border:2px solid {{ o.border }};display:flex;align-items:center;gap:14px">
+                  <span style="width:30px;height:30px;flex:none;border-radius:8px;background:{{ o.keyBg }};color:{{ o.keyFg }};font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ o.key }}</span>
+                  <span style="font:500 15px 'JetBrains Mono',monospace">{{ o.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ hasFeedback }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:14px 18px;border-radius:12px;background:{{ fbBg }};color:{{ fbFg }};font-size:14px;font-weight:600">{{ fbText }}</div>
+            </sc-if>
+            <div style="display:flex;justify-content:space-between;margin-top:8px">
+              <div style="height:46px;padding:0 20px;border-radius:10px;border:1px solid #D5DDDA;background:#fff;display:flex;align-items:center;font-size:14px;font-weight:600">Previous</div>
+              <div style="height:46px;padding:0 24px;border-radius:10px;background:#0E5E52;color:#fff;display:flex;align-items:center;font-size:14px;font-weight:700">Next question</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="w6"><div class="dv-olabel"><span class="dv-oid">W6</span>Profile — favorites &amp; history</div>
+      <div data-screen-label="W6 Profile" style="width:1280px;background:#F6F8F7;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+        <div style="height:68px;background:#fff;border-bottom:1px solid #E3E8E6;padding:0 40px;display:flex;align-items:center;gap:32px">
+          <div style="display:flex;align-items:center;gap:10px"><svg width="30" height="30" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#0E5E52"></rect><path d="M8 23h5v-5h5v-5h5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg><span style="font-size:18px;font-weight:800">SkillLearn</span></div>
+          <div style="display:flex;gap:24px;font-size:14px;font-weight:600;color:#4A5856"><a href="#w3" style="color:#4A5856">Home</a><a href="#w6" style="color:#0E5E52">Favorites</a><a href="#w6" style="color:#0E5E52">History</a></div>
+          <div style="flex:1"></div>
+          <div style="width:38px;height:38px;border-radius:50%;background:#F2A93B;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff,0 0 0 4px #0E5E52">AR</div>
+        </div>
+        <div style="padding:36px 40px 48px;display:flex;flex-direction:column;gap:28px">
+          <div style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;padding:28px;display:flex;align-items:center;gap:24px">
+            <div style="width:84px;height:84px;border-radius:50%;background:#F2A93B;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center">AR</div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:4px"><div style="font-size:24px;font-weight:800;letter-spacing:-.02em">Alya Rahma</div><div style="font-size:14px;color:#4A5856">alya@student.ac.id · Joined March 2026</div></div>
+            <div style="display:flex;gap:12px">
+              <sc-for list="{{ stats }}" as="s" hint-placeholder-count="3"><div style="width:140px;padding:14px 16px;border-radius:12px;background:#F6F8F7;display:flex;flex-direction:column;gap:2px"><span style="font-size:22px;font-weight:800">{{ s.v }}</span><span style="font-size:12px;color:#4A5856;font-weight:500">{{ s.k }}</span></div></sc-for>
+            </div>
+            <div style="height:42px;padding:0 16px;border-radius:10px;border:1px solid #D5DDDA;display:flex;align-items:center;font-size:14px;font-weight:600">Edit profile</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+            <div style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px">
+              <div style="font-size:18px;font-weight:700">Favorites</div>
+              <sc-for list="{{ favorites }}" as="c" hint-placeholder-count="3">
+                <div style="display:flex;gap:14px;align-items:center">
+                  <div style="width:72px;height:56px;flex:none;border-radius:10px;background-color:{{ c.tint }};background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.4) 0 8px,transparent 8px 16px)"></div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-size:14px;font-weight:700">{{ c.title }}</span><span style="font-size:12px;color:#4A5856">{{ c.cat }} · {{ c.meta }}</span></div>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#0E5E52" stroke="#0E5E52" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:18px;font-weight:700;margin-bottom:10px">Learning history</div>
+              <sc-for list="{{ history }}" as="h" hint-placeholder-count="5">
+                <div style="display:flex;gap:14px;padding:10px 0;border-bottom:1px solid #EEF1F0;align-items:center">
+                  <span style="font:500 10px 'JetBrains Mono',monospace;padding:4px 7px;border-radius:5px;background:#E7F3F0;color:#0E5E52;width:66px;text-align:center">{{ h.type }}</span>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ h.title }}</span><span style="font-size:12px;color:#4A5856">{{ h.course }}</span></div>
+                  <span style="font-size:12px;color:#4A5856">{{ h.when }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="w7"><div class="dv-olabel"><span class="dv-oid">W7</span>Lesson — Article</div>
+      <div data-screen-label="W7 Article" style="width:1280px;background:#F6F8F7;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)">
+        <div style="height:68px;background:#fff;border-bottom:1px solid #E3E8E6;padding:0 40px;display:flex;align-items:center;gap:32px">
+          <div style="display:flex;align-items:center;gap:10px"><svg width="30" height="30" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#0E5E52"></rect><path d="M8 23h5v-5h5v-5h5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg><span style="font-size:18px;font-weight:800">SkillLearn</span></div>
+          <div style="display:flex;gap:24px;font-size:14px;font-weight:600"><a href="#w3" style="color:#0E5E52">Home</a><a href="#w6" style="color:#4A5856">Favorites</a><a href="#w6" style="color:#4A5856">History</a></div>
+          <div style="flex:1"></div>
+          <div style="width:38px;height:38px;border-radius:50%;background:#F2A93B;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center">AR</div>
+        </div>
+        <div style="padding:28px 40px 48px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start">
+          <div style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;padding:44px 56px;display:flex;flex-direction:column;gap:20px">
+            <div style="font-size:13px;color:#4A5856;font-weight:500">Home / Programming / <span style="color:#16211F;font-weight:600">React Fundamentals</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px">
+              <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 11px 'JetBrains Mono',monospace;color:#1F4E8C;letter-spacing:.08em">LESSON 2 · ARTICLE · 6 MIN READ</span><span style="font-size:34px;font-weight:800;letter-spacing:-.02em">JSX explained</span><span style="font-size:14px;color:#4A5856">Rizky Pratama · Updated 2 Nov 2026</span></div>
+              <div style="height:42px;padding:0 16px;border-radius:10px;border:1px solid #D5DDDA;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A5856" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg>Save</div>
+            </div>
+            <div style="font-size:16px;line-height:1.75;color:#2E3A38;max-width:680px;text-wrap:pretty">JSX is a syntax extension that lets you write markup inside JavaScript. It looks like HTML, but every tag is turned into a function call before the browser runs it.</div>
+            <div style="font-size:20px;font-weight:700;letter-spacing:-.01em;margin-top:8px">What JSX compiles to</div>
+            <div style="border-radius:12px;background:#16211F;overflow:hidden;max-width:680px"><div style="height:36px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08)"><span style="font:500 10.5px 'JetBrains Mono',monospace;color:#B9C4C1;letter-spacing:.08em">JSX</span><span style="font-size:12px;font-weight:600;color:#B9C4C1">Copy</span></div><div style="padding:14px 18px;font:500 14px/1.7 'JetBrains Mono',monospace;color:#E7F3F0;overflow:hidden"><sc-for list="{{ hlArticle }}" as="ln" hint-placeholder-count="4"><div style="display:flex;gap:16px;min-height:1.7em"><div style="white-space:pre"><sc-for list="{{ ln.toks }}" as="k" hint-placeholder-count="3"><span style="color:{{ k.c }};font-style:{{ k.i }}">{{ k.t }}</span></sc-for></div></div></sc-for></div></div>
+            <div style="font-size:16px;line-height:1.75;color:#2E3A38;max-width:680px;text-wrap:pretty">Because JSX is JavaScript, you can put any expression inside curly braces: variables, function calls, or a map over an array. Attributes use camelCase, so <code style="font-family:'JetBrains Mono',monospace;font-size:.88em;background:#FBF3DF;color:#7A5510;border:1px solid #F0E2B8;padding:1px 6px;border-radius:6px">class</code> becomes <code style="font-family:'JetBrains Mono',monospace;font-size:.88em;background:#FBF3DF;color:#7A5510;border:1px solid #F0E2B8;padding:1px 6px;border-radius:6px">className</code>.</div>
+            <div style="padding:16px 18px;border-radius:12px;background:#E7F3F0;font-size:14px;line-height:1.6;color:#0B4D43;max-width:680px"><span style="font-weight:700">Tip:</span> a component must return a single root element. Wrap siblings in a <code style="font-family:'JetBrains Mono',monospace;font-size:.88em;background:#FBF3DF;color:#7A5510;border:1px solid #F0E2B8;padding:1px 6px;border-radius:6px">&lt;div&gt;</code> or a fragment <code style="font-family:'JetBrains Mono',monospace;font-size:.88em;background:#FBF3DF;color:#7A5510;border:1px solid #F0E2B8;padding:1px 6px;border-radius:6px">&lt;&gt;…&lt;/&gt;</code>.</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #E3E8E6;padding-top:20px;margin-top:8px">
+              <div style="height:44px;padding:0 18px;border-radius:10px;border:1px solid #D5DDDA;display:flex;align-items:center;font-size:14px;font-weight:600">← Welcome &amp; setup</div>
+              <a href="#w4" style="height:44px;padding:0 20px;border-radius:10px;background:#0E5E52;color:#fff;display:flex;align-items:center;font-size:14px;font-weight:700;text-decoration:none">Next: Components &amp; props →</a>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden">
+            <div style="padding:20px;border-bottom:1px solid #E3E8E6;display:flex;flex-direction:column;gap:10px">
+              <div style="font-size:16px;font-weight:700">Course content</div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:6px;border-radius:3px;background:#E3E8E6"><div style="width:12%;height:6px;border-radius:3px;background:#0E5E52"></div></div><span style="font-size:13px;font-weight:700">12%</span></div>
+            </div>
+            <sc-for list="{{ lessonsArticle }}" as="l" hint-placeholder-count="6">
+              <div style="padding:14px 20px;display:flex;gap:12px;align-items:center;background:{{ l.rowBg }};border-bottom:1px solid #EEF1F0">
+                <span style="width:28px;height:28px;flex:none;border-radius:50%;background:{{ l.numBg }};color:{{ l.numFg }};font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ l.mark }}</span>
+                <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ l.title }}</span><span style="font-size:12px;color:#4A5856">{{ l.type }} · {{ l.dur }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="w8"><div class="dv-olabel"><span class="dv-oid">W8</span>Lesson — Practice</div>
+      <div data-screen-label="W8 Practice" style="width:1280px;height:820px;background:#F6F8F7;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);display:flex;flex-direction:column">
+        <div style="height:68px;flex:none;background:#fff;border-bottom:1px solid #E3E8E6;padding:0 40px;display:flex;align-items:center;gap:20px">
+          <a href="#w4" style="font-size:14px;font-weight:600;color:#4A5856">← Back to course</a>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><span style="font-size:15px;font-weight:700">Practice: Build a to-do list</span><span style="font-size:12px;color:#4A5856">React Fundamentals · Lesson 6</span></div>
+          <div style="height:40px;padding:0 18px;border-radius:10px;background:#0E5E52;color:#fff;display:flex;align-items:center;font-size:14px;font-weight:700">Submit practice</div>
+        </div>
+        <div style="flex:1;min-height:0;display:grid;grid-template-columns:400px 1fr;">
+          <div style="background:#fff;border-right:1px solid #E3E8E6;padding:28px;display:flex;flex-direction:column;gap:18px">
+            <span style="font:500 11px 'JetBrains Mono',monospace;color:#1F4E8C;letter-spacing:.08em">PRACTICE · ~30 MIN</span>
+            <div style="font-size:15px;line-height:1.65;color:#2E3A38;text-wrap:pretty">Use <code style="font-family:'JetBrains Mono',monospace;font-size:.88em;background:#FBF3DF;color:#7A5510;border:1px solid #F0E2B8;padding:1px 6px;border-radius:6px">useState</code> to build a small to-do app. Type a task, click Add, and show it in a list below the input.</div>
+            <div style="font-size:15px;font-weight:700">Tasks</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ practiceTasks }}" as="t" hint-placeholder-count="4">
+                <div style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:10px;background:{{ t.bg }}">
+                  <span style="width:20px;height:20px;flex:none;border-radius:6px;background:{{ t.boxBg }};border:1.5px solid {{ t.boxBorder }};color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center">{{ t.mark }}</span>
+                  <span style="font-size:14px;line-height:1.45;font-weight:500">{{ t.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="flex:1"></div>
+            <div style="height:42px;border-radius:10px;border:1px solid #D5DDDA;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Show hint</div>
+          </div>
+          <div style="display:grid;grid-template-rows:1fr 240px;min-height:0">
+            <div style="background:#16211F;display:flex;flex-direction:column;min-height:0">
+              <div style="height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid rgba(255,255,255,.08)">
+                <span style="font:500 12px 'JetBrains Mono',monospace;color:#fff;padding:6px 10px;border-radius:6px;background:rgba(255,255,255,.08)">App.jsx</span>
+                <span style="height:32px;padding:0 14px;border-radius:8px;background:#F2A93B;color:#16211F;font-size:13px;font-weight:700;display:flex;align-items:center">▶ Run code</span>
+              </div>
+              <div style="padding:16px 18px;font:500 13.5px/1.75 'JetBrains Mono',monospace;color:#E7F3F0;overflow:hidden"><sc-for list="{{ hlPractice }}" as="ln" hint-placeholder-count="4"><div style="display:flex;gap:16px;min-height:1.7em"><span style="width:20px;flex:none;text-align:right;color:#5E6E6B;user-select:none">{{ ln.n }}</span><div style="white-space:pre"><sc-for list="{{ ln.toks }}" as="k" hint-placeholder-count="3"><span style="color:{{ k.c }};font-style:{{ k.i }}">{{ k.t }}</span></sc-for></div></div></sc-for></div>
+            </div>
+            <div style="background:#fff;border-top:1px solid #E3E8E6;padding:18px 22px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;justify-content:space-between"><span style="font:500 11px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">PREVIEW</span><span style="font-size:12px;font-weight:600;color:#0E5E52">2 of 4 checks passed</span></div>
+              <div style="display:flex;gap:8px"><div style="width:260px;height:38px;border:1px solid #D5DDDA;border-radius:8px;padding:0 12px;display:flex;align-items:center;font-size:14px">Finish quiz</div><div style="height:38px;padding:0 14px;border-radius:8px;background:#16211F;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center">Add</div></div>
+              <div style="font-size:14px;line-height:1.8;color:#2E3A38">• Watch lesson 3<br>• Read JSX article</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="dv-turn" id="t2">
+  <div class="dv-thd"><span class="dv-tid">MOBILE</span><span class="dv-tname">Mobile app — React Native · 390 × 844</span></div>
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="m0"><div class="dv-olabel"><span class="dv-oid">M0</span>Splash / Welcome — login required</div>
+      <div data-screen-label="M0 Splash" style="width:390px;height:844px;border-radius:44px;background:#0E5E52;color:#fff;overflow:hidden;box-shadow:0 0 0 10px #16211F,0 20px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;margin:10px">
+        <div style="height:50px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #fff;border-radius:3px"></span></div>
+        <div style="flex:1;padding:56px 24px 32px;display:flex;flex-direction:column;gap:20px">
+          <svg width="64" height="64" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#fff"></rect><path d="M8 23h5v-5h5v-5h5" stroke="#0E5E52" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg>
+          <div style="font-size:36px;font-weight:800;line-height:1.1;letter-spacing:-.02em;text-wrap:pretty">Practical skills, outside the classroom.</div>
+          <div style="font-size:16px;line-height:1.6;color:#CFE6E0">Articles, video tutorials, quizzes and hands-on practice.</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <sc-for list="{{ categories }}" as="c" hint-placeholder-count="4"><span style="padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.3);font-size:13px;font-weight:500">{{ c.name }}</span></sc-for>
+          </div>
+          <div style="flex:1"></div>
+          <a href="#m2" style="height:54px;border-radius:12px;background:#fff;color:#0E5E52;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;text-decoration:none">Create account</a>
+          <a href="#m1" style="height:54px;border-radius:12px;border:1.5px solid rgba(255,255,255,.5);color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;text-decoration:none">Log in</a>
+          <div style="font-size:13px;color:#CFE6E0;text-align:center">An account is required to access all materials.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="m1"><div class="dv-olabel"><span class="dv-oid">M1</span>Login</div>
+      <div data-screen-label="M1 Login" style="width:390px;height:844px;border-radius:44px;background:#fff;overflow:hidden;box-shadow:0 0 0 10px #16211F,0 20px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;margin:10px">
+        <div style="height:50px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #16211F;border-radius:3px"></span></div>
+        <div style="flex:1;padding:36px 24px 32px;display:flex;flex-direction:column;gap:18px">
+          <svg width="52" height="52" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="#0E5E52"></rect><path d="M8 23h5v-5h5v-5h5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="23.5" cy="8.5" r="2.6" fill="#F2A93B"></circle></svg>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"><div style="font-size:28px;font-weight:800;letter-spacing:-.02em">Welcome back</div><div style="font-size:15px;color:#4A5856">Log in to continue learning.</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Email</div><div style="height:52px;border:1px solid #D5DDDA;border-radius:12px;padding:0 16px;display:flex;align-items:center;font-size:15px">alya@student.ac.id</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Password</div><div style="height:52px;border:2px solid #0E5E52;border-radius:12px;padding:0 15px;display:flex;align-items:center;justify-content:space-between;font-size:16px;letter-spacing:.2em"><span>••••••••</span><span style="font-size:13px;letter-spacing:0;font-weight:600;color:#4A5856">Show</span></div></div>
+          <a href="#m1" style="align-self:flex-end;font-size:14px;font-weight:600">Forgot password?</a>
+          <div style="flex:1"></div>
+          <div style="height:54px;border-radius:12px;background:#0E5E52;color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center">Log in</div>
+          <div style="font-size:14px;color:#4A5856;text-align:center">New here? <a href="#m2" style="font-weight:700">Create an account</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="m2"><div class="dv-olabel"><span class="dv-oid">M2</span>Register</div>
+      <div data-screen-label="M2 Register" style="width:390px;height:844px;border-radius:44px;background:#fff;overflow:hidden;box-shadow:0 0 0 10px #16211F,0 20px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;margin:10px">
+        <div style="height:50px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #16211F;border-radius:3px"></span></div>
+        <div style="flex:1;padding:16px 24px 32px;display:flex;flex-direction:column;gap:16px">
+          <span style="font-size:22px;font-weight:600">←</span>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:4px"><div style="font-size:28px;font-weight:800;letter-spacing:-.02em">Create account</div><div style="font-size:15px;color:#4A5856">Register to access all materials.</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Full name</div><div style="height:52px;border:1px solid #D5DDDA;border-radius:12px;padding:0 16px;display:flex;align-items:center;font-size:15px">Alya Rahma</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Email</div><div style="height:52px;border:1px solid #D5DDDA;border-radius:12px;padding:0 16px;display:flex;align-items:center;font-size:15px">alya@student.ac.id</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Password</div><div style="height:52px;border:1px solid #D5DDDA;border-radius:12px;padding:0 16px;display:flex;align-items:center;font-size:16px;letter-spacing:.2em">••••••••</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;font-weight:600">Confirm password</div><div style="height:52px;border:1px solid #C2412D;border-radius:12px;padding:0 16px;display:flex;align-items:center;font-size:16px;letter-spacing:.2em">•••••••</div><div style="font-size:12px;color:#C2412D;font-weight:600">Passwords don't match.</div></div>
+          <div style="flex:1"></div>
+          <div style="height:54px;border-radius:12px;background:#0E5E52;color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center">Create account</div>
+          <div style="font-size:14px;color:#4A5856;text-align:center">Already have an account? <a href="#m1" style="font-weight:700">Log in</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="m3"><div class="dv-olabel"><span class="dv-oid">M3</span>Home</div>
+      <div data-screen-label="M3 Home" style="width:390px;height:844px;border-radius:44px;background:#F6F8F7;overflow:hidden;box-shadow:0 0 0 10px #16211F,0 20px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;margin:10px">
+        <div style="height:50px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700;flex:none"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #16211F;border-radius:3px"></span></div>
+        <div style="flex:1;overflow:hidden;padding:8px 20px 0;display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;color:#4A5856">Good morning,</span><span style="font-size:24px;font-weight:800;letter-spacing:-.02em">Alya</span></div>
+            <div style="width:44px;height:44px;border-radius:50%;background:#F2A93B;font-weight:700;display:flex;align-items:center;justify-content:center">AR</div>
+          </div>
+          <div style="height:48px;border-radius:12px;background:#fff;border:1px solid #E3E8E6;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;color:#8A9693"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A5856" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>Search courses</div>
+          <div style="background:#0E5E52;color:#fff;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px">
+            <div style="font:500 10px 'JetBrains Mono',monospace;color:#CFE6E0;letter-spacing:.08em">CONTINUE LEARNING</div>
+            <div style="font-size:17px;font-weight:700">React Fundamentals</div>
+            <div style="font-size:13px;color:#CFE6E0">Lesson 3 · Components &amp; props</div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.2)"><div style="width:64%;height:6px;border-radius:3px;background:#F2A93B"></div></div><span style="font-size:13px;font-weight:700">64%</span></div>
+          </div>
+          <div style="display:flex;gap:8px;overflow:hidden;flex:none">
+            <span style="flex:none;padding:9px 14px;border-radius:999px;background:#16211F;color:#fff;font-size:13px;font-weight:600">All</span>
+            <sc-for list="{{ categories }}" as="c" hint-placeholder-count="4"><span style="flex:none;padding:9px 14px;border-radius:999px;background:#fff;border:1px solid #E3E8E6;font-size:13px;font-weight:600;color:#4A5856">{{ c.name }}</span></sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:18px;font-weight:700">Popular courses</span><span style="font-size:13px;font-weight:600;color:#0E5E52">See all</span></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ coursesShort }}" as="c" hint-placeholder-count="3">
+              <div style="background:#fff;border:1px solid #E3E8E6;border-radius:14px;padding:10px;display:flex;gap:12px;align-items:center">
+                <div style="width:72px;height:72px;flex:none;border-radius:10px;background-color:{{ c.tint }};background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.4) 0 8px,transparent 8px 16px)"></div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;font-weight:700;color:{{ c.fg }}">{{ c.cat }}</span><span style="font-size:14px;font-weight:700;line-height:1.3">{{ c.title }}</span><span style="font-size:12px;color:#4A5856">{{ c.meta }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="height:84px;flex:none;background:#fff;border-top:1px solid #E3E8E6;display:grid;grid-template-columns:repeat(3,1fr);padding-top:10px">
+          <sc-for list="{{ tabsHome }}" as="t" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:{{ t.color }}"><span style="width:24px;height:4px;border-radius:2px;background:{{ t.bar }}"></span>{{ t.name }}</div></sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="m4"><div class="dv-olabel"><span class="dv-oid">M4</span>Course detail</div>
+      <div data-screen-label="M4 Detail" style="width:390px;height:844px;border-radius:44px;background:#fff;overflow:hidden;box-shadow:0 0 0 10px #16211F,0 20px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;margin:10px">
+        <div style="height:50px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700;flex:none;background:#16211F;color:#fff"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #fff;border-radius:3px"></span></div>
+        <div style="height:220px;flex:none;background-color:#16211F;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 12px,transparent 12px 24px);position:relative;display:flex;align-items:center;justify-content:center">
+          <span style="position:absolute;left:16px;top:12px;color:#fff;font-size:20px">←</span>
+          <div style="width:60px;height:60px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0E5E52"><path d="M7 4v16l13-8z"></path></svg></div>
+          <div style="position:absolute;left:16px;right:16px;bottom:12px;height:4px;border-radius:2px;background:rgba(255,255,255,.25)"><div style="width:30%;height:4px;border-radius:2px;background:#F2A93B"></div></div>
+        </div>
+        <div style="flex:1;overflow:hidden;padding:18px 20px 0;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+            <div style="display:flex;flex-direction:column;gap:6px"><span style="font:500 10px 'JetBrains Mono',monospace;color:#1F4E8C;letter-spacing:.08em">PROGRAMMING · BEGINNER</span><span style="font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.2">React Fundamentals</span><span style="font-size:13px;color:#4A5856">12 lessons · 3h 20m · ★ 4.8</span></div>
+            <div style="width:44px;height:44px;flex:none;border-radius:12px;border:1px solid #D5DDDA;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#0E5E52" stroke="#0E5E52" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg></div>
+          </div>
+          <div style="display:flex;gap:22px;border-bottom:1px solid #E3E8E6;font-size:14px;font-weight:600;color:#4A5856"><span style="padding-bottom:10px;border-bottom:2px solid #0E5E52;color:#16211F">Lessons</span><span style="padding-bottom:10px">About</span><span style="padding-bottom:10px">Resources</span></div>
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ lessons }}" as="l" hint-placeholder-count="6">
+              <div style="padding:11px 10px;margin:0 -10px;border-radius:10px;display:flex;gap:12px;align-items:center;background:{{ l.rowBg }}">
+                <span style="width:28px;height:28px;flex:none;border-radius:50%;background:{{ l.numBg }};color:{{ l.numFg }};font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ l.mark }}</span>
+                <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ l.title }}</span><span style="font-size:12px;color:#4A5856">{{ l.type }} · {{ l.dur }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="flex:none;padding:12px 20px 30px;border-top:1px solid #E3E8E6"><div style="height:54px;border-radius:12px;background:#0E5E52;color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center">Continue lesson 3</div></div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="m5"><div class="dv-olabel"><span class="dv-oid">M5</span>Quiz (shares state with W5)</div>
+      <div data-screen-label="M5 Quiz" style="width:390px;height:844px;border-radius:44px;background:#F6F8F7;overflow:hidden;box-shadow:0 0 0 10px #16211F,0 20px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;margin:10px">
+        <div style="height:50px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700;flex:none"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #16211F;border-radius:3px"></span></div>
+        <div style="padding:6px 20px 0;display:flex;align-items:center;gap:14px"><span style="font-size:18px;font-weight:600">✕</span><div style="flex:1;height:6px;border-radius:3px;background:#E3E8E6"><div style="width:30%;height:6px;border-radius:3px;background:#0E5E52"></div></div><span style="font:500 12px 'JetBrains Mono',monospace;color:#4A5856">3/10</span></div>
+        <div style="flex:1;padding:28px 20px 0;display:flex;flex-direction:column;gap:18px">
+          <div style="font:500 11px 'JetBrains Mono',monospace;color:#4A5856;letter-spacing:.08em">COMPONENTS &amp; PROPS</div>
+          <div style="font-size:21px;font-weight:700;line-height:1.35;text-wrap:pretty">How do you pass a value named <code style="font-family:'JetBrains Mono',monospace;font-size:.88em;background:#FBF3DF;color:#7A5510;border:1px solid #F0E2B8;padding:1px 6px;border-radius:6px">title</code> to a Card component?</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ quizOpts }}" as="o" hint-placeholder-count="4">
+              <div onClick="{{ o.pick }}" style="cursor:pointer;min-height:56px;padding:12px 14px;border-radius:12px;background:{{ o.bg }};border:2px solid {{ o.border }};display:flex;align-items:center;gap:12px">
+                <span style="width:28px;height:28px;flex:none;border-radius:8px;background:{{ o.keyBg }};color:{{ o.keyFg }};font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ o.key }}</span>
+                <span style="font:500 13px 'JetBrains Mono',monospace">{{ o.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ hasFeedback }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:12px 14px;border-radius:12px;background:{{ fbBg }};color:{{ fbFg }};font-size:13px;font-weight:600">{{ fbText }}</div>
+          </sc-if>
+        </div>
+        <div style="flex:none;padding:12px 20px 30px"><div style="height:54px;border-radius:12px;background:#0E5E52;color:#fff;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center">Next question</div></div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="m6"><div class="dv-olabel"><span class="dv-oid">M6</span>Profile (tap Favorites / History)</div>
+      <div data-screen-label="M6 Profile" style="width:390px;height:844px;border-radius:44px;background:#F6F8F7;overflow:hidden;box-shadow:0 0 0 10px #16211F,0 20px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;margin:10px">
+        <div style="height:50px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700;flex:none"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #16211F;border-radius:3px"></span></div>
+        <div style="flex:1;overflow:hidden;padding:12px 20px 0;display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:24px;font-weight:800;letter-spacing:-.02em">Profile</span><span style="font-size:14px;font-weight:600;color:#0E5E52">Edit</span></div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:64px;height:64px;border-radius:50%;background:#F2A93B;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center">AR</div>
+            <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:18px;font-weight:700">Alya Rahma</span><span style="font-size:13px;color:#4A5856">alya@student.ac.id</span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+            <sc-for list="{{ stats }}" as="s" hint-placeholder-count="3"><div style="padding:12px;border-radius:12px;background:#fff;border:1px solid #E3E8E6;display:flex;flex-direction:column;gap:2px"><span style="font-size:20px;font-weight:800">{{ s.v }}</span><span style="font-size:11px;color:#4A5856;font-weight:500;line-height:1.3">{{ s.k }}</span></div></sc-for>
+          </div>
+          <div style="height:44px;padding:4px;border-radius:12px;background:#E3E8E6;display:grid;grid-template-columns:1fr 1fr">
+            <sc-for list="{{ segs }}" as="g" hint-placeholder-count="2"><div onClick="{{ g.pick }}" style="cursor:pointer;border-radius:9px;background:{{ g.bg }};color:{{ g.color }};font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ g.name }}</div></sc-for>
+          </div>
+          <sc-if value="{{ showFav }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ favorites }}" as="c" hint-placeholder-count="3">
+                <div style="background:#fff;border:1px solid #E3E8E6;border-radius:14px;padding:10px;display:flex;gap:12px;align-items:center">
+                  <div style="width:60px;height:60px;flex:none;border-radius:10px;background-color:{{ c.tint }};background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.4) 0 8px,transparent 8px 16px)"></div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-size:14px;font-weight:700;line-height:1.3">{{ c.title }}</span><span style="font-size:12px;color:#4A5856">{{ c.cat }}</span></div>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#0E5E52" stroke="#0E5E52" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ showHist }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border:1px solid #E3E8E6;border-radius:14px;padding:4px 14px">
+              <sc-for list="{{ history }}" as="h" hint-placeholder-count="5">
+                <div style="display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #EEF1F0;align-items:center">
+                  <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ h.title }}</span><span style="font-size:12px;color:#4A5856">{{ h.type }} · {{ h.course }}</span></div>
+                  <span style="font-size:11px;color:#4A5856">{{ h.when }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <div style="height:84px;flex:none;background:#fff;border-top:1px solid #E3E8E6;display:grid;grid-template-columns:repeat(3,1fr);padding-top:10px">
+          <sc-for list="{{ tabsProfile }}" as="t" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:{{ t.color }}"><span style="width:24px;height:4px;border-radius:2px;background:{{ t.bar }}"></span>{{ t.name }}</div></sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="m7"><div class="dv-olabel"><span class="dv-oid">M7</span>Lesson — Article</div>
+      <div data-screen-label="M7 Article" style="width:390px;height:844px;border-radius:44px;background:#fff;overflow:hidden;box-shadow:0 0 0 10px #16211F,0 20px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;margin:10px">
+        <div style="height:50px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700;flex:none"><span>9:41</span><span style="width:24px;height:11px;border:1.5px solid #16211F;border-radius:3px"></span></div>
+        <div style="height:52px;flex:none;padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E3E8E6"><span style="font-size:20px">←</span><span style="font-size:14px;font-weight:600;color:#4A5856">Lesson 2 of 12</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16211F" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg></div>
+        <div style="flex:1;overflow:hidden;padding:22px 20px 0;display:flex;flex-direction:column;gap:14px">
+          <span style="font:500 10px 'JetBrains Mono',monospace;color:#1F4E8C;letter-spacing:.08em">ARTICLE · 6 MIN READ</span>
+          <span style="font-size:26px;font-weight:800;letter-spacing:-.02em">JSX explained</span>
+          <div style="font-size:15px;line-height:1.7;color:#2E3A38;text-wrap:pretty">JSX is a syntax extension that lets you write markup inside JavaScript. It looks like HTML, but every tag is turned into a function call before the app runs it.</div>
+          <div style="font-size:17px;font-weight:700">What JSX compiles to</div>
+          <div style="border-radius:12px;background:#16211F;overflow:hidden;"><div style="height:36px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08)"><span style="font:500 10.5px 'JetBrains Mono',monospace;color:#B9C4C1;letter-spacing:.08em">JSX</span><span style="font-size:12px;font-weight:600;color:#B9C4C1">Copy</span></div><div style="padding:14px 18px;font:500 11.5px/1.7 'JetBrains Mono',monospace;color:#E7F3F0;overflow:hidden"><sc-for list="{{ hlMobile }}" as="ln" hint-placeholder-count="4"><div style="display:flex;gap:16px;min-height:1.7em"><div style="white-space:pre"><sc-for list="{{ ln.toks }}" as="k" hint-placeholder-count="3"><span style="color:{{ k.c }};font-style:{{ k.i }}">{{ k.t }}</span></sc-for></div></div></sc-for></div></div>
+          <div style="font-size:15px;line-height:1.7;color:#2E3A38;text-wrap:pretty">Because JSX is JavaScript, you can put any expression inside curly braces: variables, function calls, or a map over an array.</div>
+        </div>
+        <div style="flex:none;padding:12px 20px 30px;border-top:1px solid #E3E8E6;display:grid;grid-template-columns:54px 1fr;gap:10px"><div style="height:54px;border-radius:12px;border:1px solid #D5DDDA;display:flex;align-items:center;justify-content:center;font-size:18px">←</div><a href="#m4" style="height:54px;border-radius:12px;background:#0E5E52;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;text-decoration:none">Next: Components &amp; props</a></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { sel: 0, seg: 'fav' };
+  renderVals() {
+    const CODE_A = 'const el = <h1 className="title">Hello</h1>;\n\n// compiles to\nconst el = React.createElement("h1", { className: "title" }, "Hello");';
+    const CODE_M = 'const el = <h1>Hello</h1>;\n\n// compiles to\nReact.createElement("h1", null,\n  "Hello");';
+    const CODE_P = 'import { useState } from "react";\n\nexport default function App() {\n  const [todos, setTodos] = useState([]);\n  const [text, setText] = useState("");\n\n  const addTodo = () => {\n    setTodos([...todos, text]);\n    setText("");\n  };\n\n  return (\n    <div>\n      <input value={text} onChange={e => setText(e.target.value)} />\n      <button onClick={addTodo}>Add</button>\n      <ul>{todos.map(t => <li key={t}>{t}</li>)}</ul>\n    </div>\n  );\n}';
+    const COL = { com: '#8A9693', str: '#9FD8C6', tag: '#8FB8F0', kw: '#F2A93B', fn: '#E9D59A', attr: '#F4B9A4', pun: '#B9C4C1', txt: '#E7F3F0' };
+    const hl = (code) => code.split('\n').map((line, i) => {
+      const toks = []; const re = /(\/\/.*)|("(?:[^"\\]|\\.)*")|(<\/?)([A-Za-z][\w.]*)|\b(import|from|export|default|function|const|let|return|null)\b|\b([A-Za-z_]\w*)(?=\()|\b([a-z][A-Za-z]*)(?==[^=>])|(=>|\/?>|[{}()[\];,.=])/g;
+      let last = 0, m;
+      const push = (t, k) => t && toks.push({ t, c: COL[k], i: k === 'com' ? 'italic' : 'normal' });
+      while ((m = re.exec(line))) {
+        push(line.slice(last, m.index), 'txt');
+        if (m[1]) push(m[1], 'com'); else if (m[2]) push(m[2], 'str');
+        else if (m[3]) { push(m[3], 'pun'); push(m[4], 'tag'); }
+        else if (m[5]) push(m[5], 'kw'); else if (m[6]) push(m[6], 'fn');
+        else if (m[7]) push(m[7], 'attr'); else push(m[8], 'pun');
+        last = re.lastIndex;
+      }
+      push(line.slice(last), 'txt');
+      return { n: i + 1, toks };
+    });
+    const C = {
+      Programming: ['#DCE8F7', '#1F4E8C'], 'Graphic Design': ['#F8E3DA', '#A4472A'],
+      'Digital Marketing': ['#F6ECCF', '#7A5510'], Technology: ['#DCEEE3', '#2D6B4A']
+    };
+    const raw = [
+      ['React Fundamentals: Build Your First App', 'Programming', 'Video · 12 lessons · 3h 20m', 'Beginner', '4.8', true],
+      ['Figma for Beginners: UI Basics', 'Graphic Design', 'Video · 9 lessons · 2h 10m', 'Beginner', '4.7', true],
+      ['SEO & Content Marketing 101', 'Digital Marketing', 'Article · 8 reads · 1h 30m', 'Beginner', '4.6', false],
+      ['Intro to Cloud Computing', 'Technology', 'Video · 10 lessons · 2h 45m', 'Intermediate', '4.7', false],
+      ['JavaScript Quiz Sprint', 'Programming', 'Quiz · 5 sets · 50 questions', 'Intermediate', '4.5', true],
+      ['Color Theory for Designers', 'Graphic Design', 'Article · 6 reads · 50m', 'Beginner', '4.9', false]
+    ];
+    const courses = raw.map(([title, cat, meta, level, rating, fav]) => ({
+      title, cat, meta, level, rating, tint: C[cat][0], fg: C[cat][1],
+      favFill: fav ? '#0E5E52' : 'none', favStroke: fav ? '#0E5E52' : '#4A5856', fav
+    }));
+    const L = [
+      ['Welcome & setup', 'Video', '8 min', 'done'], ['JSX explained', 'Article', '6 min read', 'done'],
+      ['Components & props', 'Video', '14 min', 'current'], ['State with useState', 'Video', '18 min', 'todo'],
+      ['Quiz: Components', 'Quiz', '10 questions', 'todo'], ['Practice: Build a to-do list', 'Practice', '30 min', 'todo']
+    ];
+    const mk = (ci) => L.map(([title, type, dur], i) => {
+      const s = i < ci ? 'done' : i === ci ? 'current' : 'todo';
+      return {
+        title, type, dur,
+        mark: s === 'done' ? '✓' : String(i + 1),
+        numBg: s === 'done' ? '#0E5E52' : s === 'current' ? '#F2A93B' : '#EEF1F0',
+        numFg: s === 'done' ? '#fff' : '#16211F',
+        rowBg: s === 'current' ? '#E7F3F0' : 'transparent'
+      };
+    });
+    const lessons = mk(2);
+    const practiceTasks = [
+      ['Create state for the todo list and the input text', true],
+      ['Add a todo when Add is clicked', true],
+      ['Render every todo with map()', false],
+      ['Clear the input after adding', false]
+    ].map(([text, d]) => ({ text, mark: d ? '✓' : '', bg: d ? '#E7F3F0' : '#F6F8F7', boxBg: d ? '#0E5E52' : '#fff', boxBorder: d ? '#0E5E52' : '#B9C4C1' }));
+    const opts = ['<Card title="Hello" />', '<Card {title: "Hello"} />', 'Card.title = "Hello"', '<Card>title=Hello</Card>'];
+    const correct = 0, sel = this.state.sel;
+    const quizOpts = opts.map((text, i) => {
+      const on = sel === i, ok = on && i === correct, bad = on && i !== correct;
+      return {
+        text, key: 'ABCD'[i], pick: () => this.setState({ sel: i }),
+        bg: ok ? '#E7F3F0' : bad ? '#FBE9E5' : '#fff',
+        border: ok ? '#0E5E52' : bad ? '#C2412D' : '#E3E8E6',
+        keyBg: ok ? '#0E5E52' : bad ? '#C2412D' : '#EEF1F0',
+        keyFg: on ? '#fff' : '#16211F'
+      };
+    });
+    const isOk = sel === correct;
+    const tab = (active) => ['Home', 'Search', 'Profile'].map(n => ({
+      name: n, color: n === active ? '#0E5E52' : '#4A5856', bar: n === active ? '#0E5E52' : 'transparent'
+    }));
+    const seg = this.state.seg;
+    return {
+      palette: [
+        { name: 'Primary', hex: '#0E5E52' }, { name: 'Primary dark', hex: '#0B4D43' },
+        { name: 'Primary tint', hex: '#E7F3F0' }, { name: 'Accent', hex: '#F2A93B' },
+        { name: 'Ink', hex: '#16211F' }, { name: 'Muted', hex: '#4A5856' },
+        { name: 'Line', hex: '#E3E8E6' }, { name: 'Surface', hex: '#F6F8F7' }
+      ],
+      categories: Object.keys(C).map(name => ({ name })),
+      courses, coursesShort: courses.slice(0, 3),
+      favorites: courses.filter(c => c.fav),
+      lessons, lessonsArticle: mk(1), practiceTasks, quizOpts,
+      hlArticle: hl(CODE_A), hlPractice: hl(CODE_P), hlMobile: hl(CODE_M),
+      hasFeedback: sel != null,
+      fbBg: isOk ? '#E7F3F0' : '#FBE9E5', fbFg: isOk ? '#0B4D43' : '#9A3322',
+      fbText: isOk ? 'Correct. Props are passed as JSX attributes.' : 'Not quite. Props are passed like HTML attributes: <Card title="Hello" />',
+      stats: [{ v: '3', k: 'In progress' }, { v: '5', k: 'Completed' }, { v: '86%', k: 'Quiz average' }],
+      history: [
+        { title: 'Components & props', course: 'React Fundamentals', type: 'Video', when: 'Today, 09:40' },
+        { title: 'JSX explained', course: 'React Fundamentals', type: 'Article', when: 'Yesterday' },
+        { title: 'Quiz: Grid & layout', course: 'Figma for Beginners', type: 'Quiz', when: '6 Nov' },
+        { title: 'Keyword research', course: 'SEO & Content Marketing 101', type: 'Article', when: '4 Nov' },
+        { title: 'Practice: Login screen', course: 'Figma for Beginners', type: 'Practice', when: '2 Nov' }
+      ],
+      tabsHome: tab('Home'), tabsProfile: tab('Profile'),
+      segs: [['fav', 'Favorites'], ['hist', 'History']].map(([id, name]) => ({
+        name, pick: () => this.setState({ seg: id }),
+        bg: seg === id ? '#fff' : 'transparent', color: seg === id ? '#16211F' : '#4A5856'
+      })),
+      showFav: seg === 'fav', showHist: seg === 'hist'
+    };
+  }
+}
+</script>
+</body>
+</html>

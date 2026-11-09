@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "name": "SkillLearn",
+    "slug": "skilllearn",
+    "scheme": "skilllearn",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F6F8F7",
+    "primaryColor": "#0E5E52",
+    "ios": {
+      "bundleIdentifier": "id.skilllearn.app",
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "SkillLearn uses your photo library so you can pick a profile photo."
+      }
+    },
+    "android": {
+      "package": "id.skilllearn.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png",
+        "backgroundColor": "#0E5E52"
+      },
+      "softwareKeyboardLayoutMode": "resize"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "SkillLearn",
+      "themeColor": "#0E5E52",
+      "backgroundColor": "#F6F8F7"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 96,
+          "resizeMode": "contain",
+          "backgroundColor": "#0E5E52"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "SkillLearn uses your photo library so you can pick a profile photo.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ]
+    ]
+  }
+}

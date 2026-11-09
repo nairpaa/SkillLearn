@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"><style>body{margin:0;background:#F6F8F7;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#16211F;-webkit-font-smoothing:antialiased}a{color:#0E5E52;text-decoration:none}a:hover{color:#0B4D43}*{box-sizing:border-box}input,button,textarea{font-family:inherit}</style></helmet>
+<div data-screen-label="Web Course Detail" style="min-height:100vh;background:#F6F8F7">
+  <dc-import name="WebNav" active="none" hint-size="100%,68px" style="position:sticky;top:0;z-index:10"></dc-import>
+  <sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}"><dc-import name="StatusBlock" kind="{{ status }}" layout="detail" platform="web" on-retry="{{ retry }}" hint-size="100%,640px"></dc-import></sc-if>
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+  <div style="max-width:1200px;margin:0 auto;padding:28px 40px 64px;display:flex;flex-direction:column;gap:20px">
+    <div style="font-size:13px;color:#4A5856;font-weight:500"><a href="Web - Home.dc.html" style="color:#4A5856">Home</a> / <a href="{{ catHref }}" style="color:#4A5856">{{ c.catName }}</a> / <span style="color:#16211F;font-weight:600">{{ c.title }}</span></div>
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:28px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:22px">
+        <div style="aspect-ratio:16/9;border-radius:16px;background-color:#16211F;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 12px,transparent 12px 24px);position:relative;display:flex;align-items:center;justify-content:center">
+          <button onClick="{{ togglePlay }}" style="width:72px;height:72px;border-radius:50%;border:0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#E7F3F0"><svg width="26" height="26" viewBox="0 0 24 24" fill="#0E5E52"><path d="{{ playIcon }}"></path></svg></button>
+          <div style="position:absolute;left:16px;top:16px;font:500 11px 'JetBrains Mono',monospace;color:#8A9693">NOW PLAYING · {{ nowPlaying }}</div>
+          <div style="position:absolute;left:20px;right:20px;bottom:18px;display:flex;align-items:center;gap:12px;color:#fff;font-size:12px;font-weight:600"><span>04:12</span><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.25)"><div style="width:30%;height:4px;border-radius:2px;background:#F2A93B"></div></div><span>14:00</span></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;gap:8px;max-width:620px">
+            <div style="font:500 11px 'JetBrains Mono',monospace;color:{{ c.fg }};letter-spacing:.08em">{{ eyebrow }}</div>
+            <div style="font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.2;text-wrap:pretty">{{ c.title }}</div>
+            <div style="font-size:14px;color:#4A5856">by {{ c.author }}</div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button onClick="{{ c.toggle }}" style="height:44px;padding:0 16px;border-radius:10px;border:1px solid #D5DDDA;background:#fff;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer;color:#16211F;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#F6F8F7;border-color:#B9C4C1"><svg width="16" height="16" viewBox="0 0 24 24" fill="{{ c.favFill }}" stroke="{{ c.favStroke }}" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg>{{ c.favLabel }}</button>
+            <a href="{{ nextHref }}" style="height:44px;padding:0 18px;border-radius:10px;background:#0E5E52;color:#fff;display:flex;align-items:center;font-size:14px;font-weight:700;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#0B4D43">{{ ctaLabel }}</a>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px">
+          <sc-for list="{{ facts }}" as="f" hint-placeholder-count="4"><div style="background:#fff;border:1px solid #E3E8E6;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#4A5856;font-weight:500">{{ f.k }}</span><span style="font-size:16px;font-weight:700">{{ f.v }}</span></div></sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:18px;font-weight:700">About this course</div>
+          <div style="font-size:15px;line-height:1.7;color:#2E3A38;max-width:720px;text-wrap:pretty">{{ c.desc }}</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #E3E8E6;border-radius:16px;overflow:hidden;position:sticky;top:96px">
+        <div style="padding:20px;border-bottom:1px solid #E3E8E6;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:16px;font-weight:700">Course content</div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:6px;border-radius:3px;background:#E3E8E6"><div style="width:{{ progressW }};height:6px;border-radius:3px;background:#0E5E52"></div></div><span style="font-size:13px;font-weight:700">{{ progressLabel }}</span></div>
+        </div>
+        <sc-for list="{{ lessons }}" as="l" hint-placeholder-count="6">
+          <a href="{{ l.href }}" style="padding:14px 20px;display:flex;gap:12px;align-items:center;background:{{ l.rowBg }};border-bottom:1px solid #EEF1F0;color:#16211F;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#F6F8F7">
+            <span style="width:28px;height:28px;flex:none;border-radius:50%;background:{{ l.numBg }};color:{{ l.numFg }};font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ l.mark }}</span>
+            <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ l.title }}</span><span style="font-size:12px;color:#4A5856">{{ l.type }} · {{ l.dur }}</span></span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { D: null, favs: null, playing: false };
+  componentDidMount() {
+    this.boot = () => import(new URL('sl-data.js', location.href).href).then(D => { this.setState({ D, favs: D.getFavs(), status: 'loading' }); return D.load().then(() => this.setState({ status: 'ready' }), () => this.setState({ status: 'error' })); });
+    this.boot();
+    window.addEventListener('hashchange', () => { this.setState({ status: 'loading' }); this.boot(); window.scrollTo(0, 0); });
+  }
+  renderVals() {
+    const st = this.state.status || 'loading';
+    const base = { status: st, ready: st === 'ready', notReady: st !== 'ready', retry: () => { this.setState({ status: 'loading' }); this.boot(); } };
+    if (st !== 'ready' || !this.state.D) return base;
+    const v = this.vals();
+    if (v.__notfound) return { ...base, status: 'notfound', ready: false, notReady: true };
+    return { ...base, ...v };
+  }
+  vals() {
+    const D = this.state.D;
+    if (D.param('c') && !D.findCourse(D.param('c'))) return { __notfound: true };
+    const raw = D.course(D.param('c'));
+    const c = D.card('web', raw, this.state.favs, (f) => this.setState({ favs: f }));
+    const ls = D.lessons('web', raw), cur = ls[raw.current];
+    return {
+      c, lessons: ls, catHref: D.page('web', 'Category', 'c=' + raw.cat),
+      eyebrow: (c.catName + ' · ' + c.level).toUpperCase(),
+      nowPlaying: ('Lesson ' + (raw.current + 1) + ' — ' + cur.title).toUpperCase(),
+      playIcon: this.state.playing ? 'M7 5h4v14H7zM13 5h4v14h-4z' : 'M7 4v16l13-8z',
+      togglePlay: () => this.setState({ playing: !this.state.playing }),
+      nextHref: cur.href, ctaLabel: raw.progress > 0 ? 'Continue lesson ' + (raw.current + 1) : 'Start course',
+      progressW: raw.progress + '%', progressLabel: raw.progress + '%',
+      facts: [{ k: 'Lessons', v: String(raw.lessons) }, { k: 'Duration', v: raw.dur }, { k: 'Level', v: raw.level }, { k: 'Rating', v: '★ ' + raw.rating }]
+    };
+  }
+}
+</script>
+</body>
+</html>

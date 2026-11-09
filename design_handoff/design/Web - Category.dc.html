@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"><style>body{margin:0;background:#F6F8F7;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#16211F;-webkit-font-smoothing:antialiased}a{color:#0E5E52;text-decoration:none}a:hover{color:#0B4D43}*{box-sizing:border-box}input,button,textarea{font-family:inherit}</style></helmet>
+<div data-screen-label="Web Category" style="min-height:100vh;background:#F6F8F7">
+  <dc-import name="WebNav" active="none" hint-size="100%,68px" style="position:sticky;top:0;z-index:10"></dc-import>
+  <sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}"><dc-import name="StatusBlock" kind="{{ status }}" layout="grid" platform="web" nf-title="Category not found" on-retry="{{ retry }}" hint-size="100%,640px"></dc-import></sc-if>
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+  <div style="background-color:{{ k.tint }};background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.35) 0 14px,transparent 14px 28px)">
+    <div style="max-width:1200px;margin:0 auto;padding:40px 40px 44px;display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:13px;font-weight:600;color:#4A5856"><a href="Web - Home.dc.html" style="color:#4A5856">Home</a> / Categories</div>
+      <div style="font-size:38px;font-weight:800;letter-spacing:-.02em;color:{{ k.fg }}">{{ k.name }}</div>
+      <div style="font-size:16px;line-height:1.6;color:#2E3A38;max-width:560px">{{ k.desc }}</div>
+      <div style="font-size:14px;font-weight:700;color:#16211F">{{ countLabel }}</div>
+    </div>
+  </div>
+  <div style="max-width:1200px;margin:0 auto;padding:32px 40px 64px;display:flex;flex-direction:column;gap:36px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px">
+      <sc-for list="{{ courses }}" as="c" hint-placeholder-count="2">
+        <div style="position:relative;background:#fff;border:1px solid #E3E8E6;border-radius:14px;overflow:hidden;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="border-color:#9FC5BC;box-shadow:0 8px 24px rgba(14,94,82,.10);transform:translateY(-2px)">
+          <a href="{{ c.href }}" style="display:flex;flex-direction:column;color:#16211F">
+            <div style="height:150px;background-color:{{ c.tint }};background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.4) 0 10px,transparent 10px 20px);padding:12px"><span style="padding:5px 10px;border-radius:999px;background:#fff;color:{{ c.fg }};font-size:12px;font-weight:700">{{ c.type }}</span></div>
+            <div style="padding:16px;display:flex;flex-direction:column;gap:8px">
+              <div style="font-size:16px;font-weight:700;line-height:1.35;text-wrap:pretty">{{ c.title }}</div>
+              <div style="font-size:13px;line-height:1.5;color:#4A5856">{{ c.desc }}</div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px"><span style="font-weight:600;color:#4A5856">{{ c.level }} · {{ c.dur }}</span><span style="font-weight:700">★ {{ c.rating }}</span></div>
+            </div>
+          </a>
+          <button onClick="{{ c.toggle }}" title="{{ c.favLabel }}" style="position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="background:#E7F3F0"><svg width="16" height="16" viewBox="0 0 24 24" fill="{{ c.favFill }}" stroke="{{ c.favStroke }}" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"></path></svg></button>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:18px;font-weight:700">Other categories</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <sc-for list="{{ others }}" as="o" hint-placeholder-count="3"><a href="{{ o.href }}" style="padding:10px 16px;border-radius:999px;background:#fff;border:1px solid #E3E8E6;color:#16211F;font-size:14px;font-weight:600;transition:background .15s,border-color .15s,box-shadow .15s,transform .15s,color .15s" style-hover="border-color:#0E5E52;color:#0E5E52">{{ o.name }}</a></sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { D: null, favs: null };
+  componentDidMount() {
+    this.boot = () => import(new URL('sl-data.js', location.href).href).then(D => { this.setState({ D, favs: D.getFavs(), status: 'loading' }); return D.load().then(() => this.setState({ status: 'ready' }), () => this.setState({ status: 'error' })); });
+    this.boot();
+    window.addEventListener('hashchange', () => { this.setState({ status: 'loading' }); this.boot(); window.scrollTo(0, 0); });
+  }
+  renderVals() {
+    const st = this.state.status || 'loading';
+    const base = { status: st, ready: st === 'ready', notReady: st !== 'ready', retry: () => { this.setState({ status: 'loading' }); this.boot(); } };
+    if (st !== 'ready' || !this.state.D) return base;
+    const v = this.vals();
+    if (v.__notfound) return { ...base, status: 'notfound', ready: false, notReady: true };
+    return { ...base, ...v };
+  }
+  vals() {
+    const D = this.state.D;
+    if (D.param('c') && !D.findCat(D.param('c'))) return { __notfound: true };
+    const k = D.cat(D.param('c')), set = (f) => this.setState({ favs: f });
+    const list = D.COURSES.filter(c => c.cat === k.id).map(c => D.card('web', c, this.state.favs, set));
+    return {
+      k, courses: list, countLabel: list.length + ' courses',
+      others: D.CATS.filter(o => o.id !== k.id).map(o => ({ name: o.name, href: D.page('web', 'Category', 'c=' + o.id) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

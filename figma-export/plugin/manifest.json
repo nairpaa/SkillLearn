@@ -1,0 +1,10 @@
+{
+  "name": "SkillLearn Importer v2",
+  "id": "skilllearn-importer-v2-local",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": { "allowedDomains": ["none"] }
+}

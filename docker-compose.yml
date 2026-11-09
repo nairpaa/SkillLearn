@@ -1,0 +1,14 @@
+# Opsional: MongoDB lokal lewat Docker kalau belum terpasang.
+# Jalankan: docker compose up -d
+services:
+  mongo:
+    image: mongo:7
+    container_name: skilllearn-mongo
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:27017:27017"  # hanya bisa diakses dari komputer ini, bukan dari jaringan
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
