@@ -52,6 +52,12 @@
           "microphonePermission": false
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "56811004-d930-4519-89a0-7a656f5d7d3a"
+      }
+    },
+    "owner": "nairpaas-team"
   }
 }
