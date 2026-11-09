@@ -74,7 +74,12 @@ let baru = await login('baru@student.ac.id');
   const r = await call('/me', { token: tampered });
   const jwtNone = 'eyJhbGciOiJub25lIn0.eyJzdWIiOiJ4In0.';
   const r2 = await call('/me', { token: jwtNone });
-  record('Token diubah / palsu', r.status === 401 && r2.status === 401, `1 karakter token diubah → ${r.status} ${r.json.error} · token JWT alg:none → ${r2.status}`);
+  // Di Vercel, token JWT alg:none sudah diblokir firewall platform (403) sebelum sampai ke API; keduanya = ditolak.
+  record(
+    'Token diubah / palsu',
+    r.status === 401 && [401, 403].includes(r2.status),
+    `1 karakter token diubah → ${r.status} ${r.json.error} · token JWT alg:none → ${r2.status}${r2.status === 403 ? ' (diblokir firewall Vercel)' : ''}`
+  );
 }
 
 // 4. Reuse refresh token

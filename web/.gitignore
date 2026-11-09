@@ -4,3 +4,4 @@ screenshots
 .env
 .env.local
 .vercel
+.env*

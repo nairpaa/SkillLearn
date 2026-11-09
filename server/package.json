@@ -11,7 +11,8 @@
     "keys": "node src/scripts/generate-keys.js",
     "test:security": "node src/scripts/security-test.js",
     "test": "node --test --test-reporter=spec \"test/**/*.test.js\"",
-    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=\"src/**\" --test-coverage-exclude=\"src/seed/**\" --test-coverage-exclude=\"src/scripts/**\" \"test/**/*.test.js\""
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=\"src/**\" --test-coverage-exclude=\"src/seed/**\" --test-coverage-exclude=\"src/scripts/**\" \"test/**/*.test.js\"",
+    "db:check": "node src/scripts/check-db.js"
   },
   "license": "MIT",
   "engines": {

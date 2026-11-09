@@ -1,0 +1,6 @@
+# Jangan upload rahasia lokal & file test ke Vercel
+.env
+.env.*
+!.env.example
+test
+node_modules
