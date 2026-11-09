@@ -138,3 +138,6 @@
 .md-compact { gap: 12px; }
 .md-compact p, .md-compact ul, .md-compact ol { font-size: 15px; line-height: 1.65; }
 .md-compact h2 { font-size: 17px; margin-top: 4px; }
+
+/* Pesan error di dalam dialog (mis. logout gagal) */
+.dialog-error { margin: 0 0 10px; padding: 10px 12px; border-radius: 10px; background: var(--sl-danger-tint); color: var(--sl-danger-ink); font-size: 13px; font-weight: 600; }

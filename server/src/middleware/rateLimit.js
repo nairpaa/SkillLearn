@@ -52,7 +52,13 @@ export class MongoStore {
   // (mis. MongoDB putus sesaat) ditangkap, supaya tidak jadi unhandled rejection yang menghentikan proses.
   async decrement(key) {
     try {
-      await RateLimit.collection.updateOne({ _id: this.id(key), count: { $gt: 0 } }, { $inc: { count: -1 } });
+      // Hanya kurangi kalau jendela sekarang sudah berjalan >30 detik. Kalau baru saja reset, request yang
+      // dikurangi kemungkinan milik jendela sebelumnya, dan mengurangi hitungan baru = memberi percobaan gratis.
+      const latestResetAt = new Date(Date.now() + this.windowMs - 30 * 1000);
+      await RateLimit.collection.updateOne(
+        { _id: this.id(key), count: { $gt: 0 }, resetAt: { $lte: latestResetAt } },
+        { $inc: { count: -1 } }
+      );
     } catch (err) {
       console.error('[rate-limit] Gagal mengurangi hitungan:', err.message);
     }
@@ -170,12 +176,13 @@ export async function reserveLoginAttempt(req, email) {
           lockedUntil: { $cond: [locked, '$lockedUntil', { $cond: [crossing, { $add: [now, lockMs] }, '$lockedUntil'] }] },
           lockouts: { $cond: [crossing, { $add: [lockouts, 1] }, lockouts] },
           lockedAt: { $cond: [crossing, now, '$lockedAt'] },
-          lockoutsResetAt: { $cond: [memoryActive, '$lockoutsResetAt', new Date(now.getTime() + LOCKOUT_MEMORY)] },
+          // Ingatan "pernah terkunci" berlaku 24 jam sejak kunci terakhir dipasang.
+          lockoutsResetAt: { $cond: [crossing, new Date(now.getTime() + LOCKOUT_MEMORY), { $cond: [memoryActive, '$lockoutsResetAt', null] }] },
           count: { $cond: [{ $or: [locked, crossing] }, 0, nextCount] },
           resetAt: { $cond: [{ $or: [locked, crossing] }, now, { $cond: [windowActive, '$resetAt', new Date(now.getTime() + LOGIN_WINDOW)] }] },
         },
       },
-      { $set: { expireAt: { $max: ['$lockoutsResetAt', '$lockedUntil'] } } },
+      { $set: { expireAt: { $max: ['$lockoutsResetAt', '$lockedUntil', '$resetAt'] } } },
     ],
     { upsert: true, returnDocument: 'after', includeResultMetadata: false }
   );

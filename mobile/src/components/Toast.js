@@ -11,7 +11,10 @@ export function ToastProvider({ children }) {
 
   const hide = useCallback(() => {
     clearTimeout(timer.current);
-    Animated.timing(opacity, { toValue: 0, duration: motion.fast, useNativeDriver: true }).start(() => setToast(null));
+    // Hanya hapus kalau animasi benar-benar selesai. Kalau dipotong oleh show() berikutnya, toast baru jangan ikut hilang.
+    Animated.timing(opacity, { toValue: 0, duration: motion.fast, useNativeDriver: true }).start(({ finished }) => {
+      if (finished) setToast(null);
+    });
   }, [opacity]);
 
   const show = useCallback(

@@ -89,9 +89,16 @@ function EditForm({ me }) {
 
     setBusy(true);
     setFormErr('');
+    let pwChanged = false;
     try {
       // ganti password dulu: kalau password lama salah, profil belum ikut berubah
-      if (wantsPw) await post('/auth/change-password', { currentPassword: currentPw, newPassword: newPw });
+      if (wantsPw) {
+        await post('/auth/change-password', { currentPassword: currentPw, newPassword: newPw });
+        pwChanged = true;
+        // Password sudah berganti di server: kosongkan field supaya simpan ulang tidak mengirim password lama lagi.
+        setCurrentPw('');
+        setNewPw('');
+      }
       if (Object.keys(body).length) {
         const user = await patch('/me', body);
         qc.setQueryData(qk.me, (old) => ({ ...old, ...user }));
@@ -101,7 +108,10 @@ function EditForm({ me }) {
       setSaved(true);
       timer.current = setTimeout(() => navigate('/profile'), 1000);
     } catch (err) {
-      if (err instanceof ApiError && err.code === 'WRONG_PASSWORD') {
+      const prefix = pwChanged ? 'Your password was changed, but your other changes weren’t saved. ' : '';
+      if (pwChanged && !(err instanceof ApiError && err.code === 'VALIDATION_ERROR')) {
+        setFormErr(prefix + (err instanceof ApiError && err.isNetwork ? 'Check your internet connection and try again.' : 'Try saving again.'));
+      } else if (err instanceof ApiError && err.code === 'WRONG_PASSWORD') {
         setErrors({ currentPassword: 'Current password is incorrect.' });
         curRef.current?.focus();
       } else if (err instanceof ApiError && err.code === 'VALIDATION_ERROR' && err.fields) {

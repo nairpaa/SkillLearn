@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { ApiError, post, retryAfterText } from '../api/client';
+import { ApiError, post, refreshAccessToken, retryAfterText } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { AuthCard } from '../components/AuthLayout';
 import { AlertIcon } from '../components/Icons';
@@ -38,8 +38,15 @@ export default function ResetPassword() {
     setFormErr('');
     try {
       await post('/auth/reset-password', { token, password }, { auth: false });
-      // reset mencabut semua sesi, jadi sesi lokal (kalau ada) ikut dibersihkan
-      if (status === 'authed') clearSession();
+      // Reset mencabut semua sesi akun YANG DI-RESET. Kalau yang sedang login di browser ini akun lain,
+      // sesinya tetap hidup; cukup dicek dengan refresh: gagal = memang akun ini, bersihkan sesi lokal.
+      if (status === 'authed') {
+        try {
+          await refreshAccessToken();
+        } catch {
+          clearSession();
+        }
+      }
       navigate('/login?reset=1', { replace: true });
     } catch (err) {
       setBusy(false);

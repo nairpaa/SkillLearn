@@ -62,7 +62,15 @@ export function useFavoriteToggle() {
     // scope yang sama → semua toggle favorit dijalankan berurutan, jadi PUT/DELETE nggak saling balapan
     scope: { id: 'favorites' },
     mutationFn: ({ course, next }) => (next ? meApi.addFavorite(course.id) : meApi.removeFavorite(course.id)),
-    onMutate: ({ course, next }) => applyFavorite(qc, course, next),
+    // Batalkan refetch yang sedang jalan dulu, supaya hasil lama tidak menimpa status favorit yang baru.
+    onMutate: async ({ course, next }) => {
+      await Promise.all([
+        qc.cancelQueries({ queryKey: keys.favorites }),
+        qc.cancelQueries({ queryKey: ['courses'] }),
+        qc.cancelQueries({ queryKey: ['course'] }),
+      ]);
+      applyFavorite(qc, course, next);
+    },
     onError: (_err, { course, next }) => {
       applyFavorite(qc, course, !next);
       toast.show("Couldn't update favorites. Try again.");
@@ -73,17 +81,19 @@ export function useFavoriteToggle() {
     },
   });
 
+  // mutate dari TanStack Query stabil antar render; memakai objek mutation utuh membuat semua baris kursus ikut render ulang.
+  const { mutate } = mutation;
   return useCallback(
     (course) => {
       if (!course) return;
       const next = !course.isFavorite;
-      mutation.mutate({ course, next });
+      mutate({ course, next });
       toast.show(next ? 'Saved to favorites' : 'Removed from favorites', {
         actionLabel: 'Undo',
-        onAction: () => mutation.mutate({ course: { ...course, isFavorite: next }, next: !next }),
+        onAction: () => mutate({ course: { ...course, isFavorite: next }, next: !next }),
       });
     },
-    [mutation, toast]
+    [mutate, toast]
   );
 }
 

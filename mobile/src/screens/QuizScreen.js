@@ -13,7 +13,7 @@ import { useStatusBar } from '../hooks/useStatusBar';
 import { colors, fonts, NO_LIGATURES, radius } from '../theme';
 import { NETWORK_MESSAGE, stripPrefix } from '../utils/format';
 import { openLesson } from '../utils/lessons';
-import { goHome } from '../utils/nav';
+import { goBackOr, goHome } from '../utils/nav';
 
 const KEYS = 'ABCDEFGHIJ';
 
@@ -205,7 +205,7 @@ export default function QuizScreen({ navigation, route }) {
                       <Text style={styles.reviewMeta}>
                         {r.chosenIndex >= 0 ? `Your answer: ${KEYS[r.chosenIndex]} · ` : ''}
                         {`Correct: ${KEYS[r.correctIndex]} · `}
-                        <Text style={question.mono || qq.mono ? styles.mono : null}>{qq.options[r.correctIndex]}</Text>
+                        <Text style={qq.mono ? styles.mono : null}>{qq.options[r.correctIndex]}</Text>
                       </Text>
                     ) : null}
                     {r.explanation ? <Text style={[styles.reviewWhy, { color: ok ? colors.primaryHover : colors.dangerInk }]}>{r.explanation}</Text> : null}
@@ -217,7 +217,7 @@ export default function QuizScreen({ navigation, route }) {
           <View style={{ flex: 1, minHeight: 8 }} />
           <Button
             title={next ? (next.type === 'Practice' ? 'Next: Practice' : `Next: ${next.title}`) : 'Back to course'}
-            onPress={() => (next ? openLesson(navigation, course, next, 'replace') : navigation.goBack())}
+            onPress={() => (next ? openLesson(navigation, course, next, 'replace') : goBackOr(navigation))}
           />
           <Button title="Retry quiz" variant="secondary" height={50} onPress={retry} />
         </ScrollView>

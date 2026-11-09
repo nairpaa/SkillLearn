@@ -108,6 +108,13 @@ export default function PracticeScreen({ navigation, route }) {
       setBanner({ kind: 'info', text: `Finish all ${tasks.length} tasks before submitting.` });
       return;
     }
+    // Centang task saja tidak cukup: kode harus lolos semua pengecekan otomatis.
+    const latest = runChecks(practice.checks, source);
+    setResults(latest);
+    if (latest.some((r) => !r.pass)) {
+      setBanner({ kind: 'info', text: `Run your code and make all ${latest.length} checks pass before submitting.` });
+      return;
+    }
     setSubmitting(true);
     try {
       await completeLesson(course, lesson, { silent: true });

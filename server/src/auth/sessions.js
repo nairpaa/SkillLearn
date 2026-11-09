@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import mongoose from 'mongoose';
 import Session from '../models/Session.js';
+import RetiredToken from '../models/RetiredToken.js';
 import { REFRESH_ABSOLUTE_DAYS, REFRESH_SLIDING_DAYS } from '../config/constants.js';
 import { env } from '../config/env.js';
 import { addDays, randomToken, securityLog, sha256 } from '../services/http.js';
@@ -18,7 +19,7 @@ const MAX_GRACE_USES = 3;
 // Hasilnya acak bagi siapa pun tanpa kunci, tapi selalu sama untuk token lama yang sama, sehingga
 // request yang kalah balapan bisa diberi token baru yang identik tanpa menyimpan token asli di database.
 function nextTokenFor(sessionId, oldHash) {
-  return crypto.createHmac('sha256', env.pasetoSecretKey || 'dev').update(`${sessionId}:${oldHash}`).digest('base64url');
+  return crypto.createHmac('sha256', env.refreshSecret || 'dev').update(`${sessionId}:${oldHash}`).digest('base64url');
 }
 
 const uaOf = (req) => (req.get('user-agent') || '').slice(0, 300);
@@ -48,7 +49,7 @@ export async function createSession(user, req) {
     userId: user._id,
     family: crypto.randomUUID(),
     tokenHash: sha256(refreshToken),
-    userAgent: (req.get('user-agent') || '').slice(0, 300),
+    userAgent: uaOf(req),
     ip: req.clientIp,
     expiresAt: addDays(now, REFRESH_SLIDING_DAYS),
     absoluteExpiresAt: addDays(now, REFRESH_ABSOLUTE_DAYS),
@@ -98,12 +99,28 @@ export async function rotateSession(rawToken, req) {
       },
       { returnDocument: 'after' }
     );
-    if (rotated) return { session: rotated, refreshToken: nextToken };
+    if (rotated) {
+      // Catat hash lama selama sesi masih berlaku, untuk deteksi pemakaian ulang di kemudian hari.
+      await RetiredToken.updateOne(
+        { _id: hash },
+        { $setOnInsert: { sessionId: current._id, userId: current.userId, expireAt: current.absoluteExpiresAt } },
+        { upsert: true }
+      );
+      return { session: rotated, refreshToken: nextToken };
+    }
     // Kalah balapan dengan request lain yang memakai token yang sama: lanjut ke pengecekan di bawah.
   }
 
   const previous = await Session.findOne({ prevHashes: hash }).lean();
-  if (!previous) throw new SessionError('SESSION_INVALID');
+  if (!previous) {
+    // Lebih tua dari 50 rotasi terakhir: cek arsip hash lama.
+    const retired = await RetiredToken.findById(hash).lean();
+    if (retired) {
+      await Session.updateMany({ userId: retired.userId, revokedAt: null }, { $set: { revokedAt: now } });
+      securityLog('refresh_token_reuse', { userId: String(retired.userId), ip: req.clientIp });
+    }
+    throw new SessionError('SESSION_INVALID');
+  }
 
   // Masa tenggang: token tepat sebelumnya, token penggantinya belum dipakai (belum dirotasi lagi),
   // user-agent sama, masih dalam 2 menit, dan jatah pemakaian belum habis. Dicek & dihitung secara atomik.

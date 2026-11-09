@@ -27,6 +27,9 @@ export const env = {
   pasetoSecretKey: process.env.PASETO_SECRET_KEY,
   pasetoPublicKey: process.env.PASETO_PUBLIC_KEY,
   pasetoKid: process.env.PASETO_KID || 'k1',
+  // Kunci HMAC untuk menurunkan refresh token berikutnya (rotasi idempoten). Dipisah dari kunci PASETO
+  // supaya rotasi kunci PASETO tidak membuat balapan refresh yang wajar terbaca sebagai pencurian.
+  refreshSecret: process.env.REFRESH_TOKEN_SECRET || process.env.PASETO_SECRET_KEY || '',
   // Kunci publik lama yang masih diterima selama rotasi, format: "k0=k4.public.xxx,k-1=k4.public.yyy"
   pasetoPreviousKeys: list(process.env.PASETO_PREVIOUS_PUBLIC_KEYS).map((pair) => {
     const [kid, key] = pair.split('=');
@@ -60,6 +63,9 @@ export const env = {
 export function assertSecrets() {
   if (!env.pasetoSecretKey || !env.pasetoPublicKey) {
     throw new Error('PASETO_SECRET_KEY / PASETO_PUBLIC_KEY belum diisi. Jalankan `npm run keys` lalu salin hasilnya ke .env');
+  }
+  if (env.isProd && !process.env.REFRESH_TOKEN_SECRET) {
+    console.warn('[PERINGATAN] REFRESH_TOKEN_SECRET belum diisi; sementara memakai PASETO_SECRET_KEY. Isi nilai acak tersendiri (lihat docs/DEPLOYMENT.md).');
   }
   // Tanpa rahasia proxy yang kuat, semua pengguna web terbaca satu IP (IP Vercel) dan berbagi kuota rate limit.
   if (env.isProd && env.proxySecret.length < 32) {

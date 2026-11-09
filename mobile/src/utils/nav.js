@@ -22,3 +22,10 @@ export function goHomeTab(navigation) {
   popHomeStack(navigation, navigation.getState());
   navigation.navigate('HomeTab');
 }
+
+// Kembali ke layar sebelumnya; kalau layar ini dibuka langsung dari deep link (tidak ada layar di bawahnya),
+// arahkan ke Home supaya tombol tidak "diam".
+export function goBackOr(navigation) {
+  if (navigation.canGoBack()) navigation.goBack();
+  else goHome(navigation);
+}

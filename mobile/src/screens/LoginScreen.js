@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import AuthLayout from '../components/AuthLayout';
 import BackButton from '../components/BackButton';
@@ -13,7 +13,11 @@ import { isValidEmail, NETWORK_MESSAGE, tooManyAttemptsMessage } from '../utils/
 // M01 Login
 export default function LoginScreen({ navigation }) {
   useStatusBar('dark');
-  const { login, sessionExpired } = useAuth();
+  const { login, sessionExpired, dismissExpired } = useAuth();
+  // Banner "sesi habis" cukup tampil sekali; flag-nya dibersihkan supaya layar Login berikutnya tidak menampilkannya lagi.
+  useEffect(() => {
+    if (sessionExpired) dismissExpired();
+  }, [sessionExpired, dismissExpired]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});

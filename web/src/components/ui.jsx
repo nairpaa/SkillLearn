@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import { Link } from 'react-router';
-import { passwordStrength } from '../lib/format';
+import { initials, passwordStrength } from '../lib/format';
 
 export function Spinner({ dark = false }) {
   return <span className={`spinner${dark ? ' spinner-dark' : ''}`} aria-hidden="true" />;
@@ -148,13 +148,7 @@ export function StrengthMeter({ password, id }) {
 }
 
 export function Avatar({ name, src, size = 38, fontSize, ring = false, className = '' }) {
-  const init = (name || '')
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase() || '?';
+  const init = initials(name);
   return (
     <span
       className={`avatar ${ring ? 'avatar-ring' : ''} ${className}`}

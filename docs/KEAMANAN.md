@@ -86,13 +86,24 @@ NoSQL injection, ReDoS, avatar, XSS web, penyimpanan token di web & mobile, WebV
 Dependensi (`npm audit --omit=dev`): server 0, web 0, mobile 5 moderate di tooling build Expo (`glob`/`minimatch` milik
 `@expo/cli`), tidak ikut di aplikasi yang dijalankan HP. Perbaikan otomatisnya justru menurunkan Expo ke versi lama, jadi tidak dipakai.
 
+## Code review (skill `/code-review`, level high)
+
+Setelah repo ada di GitHub, seluruh folder `server`, `web`, dan `mobile` direview lagi dengan fokus bug correctness.
+Semua temuan sudah diperbaiki dan diberi test regresi.
+
+| Bagian | Temuan utama yang diperbaiki |
+| --- | --- |
+| server (10) | auth route materi dipasang di router-nya sendiri; error body-parser (charset dll.) jadi 4xx bukan 500; token lama >50 rotasi tetap terdeteksi lewat koleksi `retiredtokens` (TTL); memori lockout 24 jam dimulai saat terkunci; kunci HMAC refresh terpisah (`REFRESH_TOKEN_SECRET`); pengurangan hitungan rate limit tidak menyentuh jendela baru; query daftar tidak memuat isi lesson; query redundan di profil & kuis dihapus |
+| web (10) | error boundary + muat ulang otomatis saat chunk lama hilang (dan `/assets` yang hilang = 404); server tak terjangkau saat boot ditampilkan sebagai error + coba lagi, bukan logout; logout yang gagal tidak lagi pura-pura berhasil; ganti password + simpan profil yang gagal sebagian diberi tahu; favorit disinkron ulang ke semua tampilan; submit latihan wajib lolos semua check; error pencarian tetap tampil; reset password tidak mengeluarkan akun lain; link internal Markdown lewat router |
+| mobile (10) | refresh yang kena 429/5xx tidak menghapus token; body respons yang macet tetap kena timeout; toast baru tidak hilang karena animasi lama; tombol kembali dari deep link tidak "diam"; gaya kode di hasil kuis per soal; banner sesi habis tidak muncul berulang; favorit membatalkan refetch lama sebelum update optimistis; submit latihan wajib lolos semua check |
+
 ## Menjalankan test
 
 ```bash
-cd server && npm test             # 136 test unit + integrasi (MongoDB in-memory, tidak butuh Docker)
+cd server && npm test             # 140 test unit + integrasi (MongoDB in-memory, tidak butuh Docker)
 cd server && npm run test:coverage
-cd web && npm test                # 30 test (client API, Markdown XSS, proxy Vercel, util)
-cd mobile && npm test             # 18 test (parser Markdown, link aman, client API, util)
+cd web && npm test                # 31 test (client API, Markdown XSS, proxy Vercel, util)
+cd mobile && npm test             # 21 test (parser Markdown, link aman, client API, util)
 ```
 
 CI GitHub Actions (`.github/workflows/ci.yml`) menjalankan semuanya, plus build web, export bundle Android, dan `npm audit`, di setiap push.

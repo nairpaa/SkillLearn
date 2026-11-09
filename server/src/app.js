@@ -64,10 +64,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', noStore, authRoutes);
 app.use('/api/me', noStore, requireAuth, userLimiter, meRoutes);
 app.use('/api/admin', noStore, requireAuth, requireRole('admin'), userLimiter, adminRoutes);
-for (const path of ['/api/categories', '/api/courses', '/api/quizzes']) {
-  app.use(path, requireAuth, userLimiter);
-}
-app.use('/api', contentRoutes);
+app.use('/api', contentRoutes); // auth & limiter dipasang di dalam router-nya sendiri
 
 app.use(notFoundRoute);
 app.use(errorHandler);

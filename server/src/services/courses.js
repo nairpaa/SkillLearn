@@ -5,6 +5,12 @@ import Progress from '../models/Progress.js';
 import Quiz from '../models/Quiz.js';
 import { CATEGORIES } from '../config/constants.js';
 
+// Field berat yang tidak dibutuhkan untuk kartu/daftar course (isi artikel & latihan).
+// Dipakai di query daftar supaya tidak menarik puluhan KB per lesson dari database.
+export const SUMMARY_PROJECTION = '-lessons.contentMd -lessons.practice';
+
+export const findLesson = (course, lessonId) => course.lessons.find((l) => String(l._id) === String(lessonId));
+
 // ---------- Format durasi ----------
 
 export function lessonDuration(lesson) {

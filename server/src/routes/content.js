@@ -4,14 +4,17 @@ import Course from '../models/Course.js';
 import Quiz from '../models/Quiz.js';
 import QuizAttempt from '../models/QuizAttempt.js';
 import { CATEGORIES } from '../config/constants.js';
+import { requireAuth } from '../middleware/auth.js';
+import { userLimiter } from '../middleware/rateLimit.js';
 import { CourseQuery, IdParam, QuizAttemptInput, SlugParam, parse } from '../middleware/validate.js';
-import { loadUserState, summariesFor, toDetail } from '../services/courses.js';
-import { completeLesson, recordView } from '../services/progress.js';
+import { SUMMARY_PROJECTION, findLesson, loadUserState, summariesFor, toDetail } from '../services/courses.js';
+import { completeLesson, recordHistory } from '../services/progress.js';
 import { HttpError, escapeRegExp, notFound } from '../services/http.js';
 
-// Semua route di file ini dipasang di belakang requireAuth (lihat app.js):
-// materi hanya bisa diakses setelah login.
+// Materi hanya bisa diakses setelah login. Auth dipasang di sini (bukan di daftar path app.js),
+// jadi route baru yang ditambahkan ke file ini otomatis ikut terlindungi.
 const router = Router();
+router.use(requireAuth, userLimiter);
 
 // GET /api/categories  [ext]
 router.get('/categories', async (req, res) => {
@@ -35,7 +38,7 @@ router.get('/courses', async (req, res) => {
     if (matchingCategories.length) filter.$or.push({ category: mongoose.trusted({ $in: matchingCategories }) });
   }
 
-  const courses = await Course.find(filter).sort({ order: 1, title: 1 }).limit(limit).lean();
+  const courses = await Course.find(filter).select(SUMMARY_PROJECTION).sort({ order: 1, title: 1 }).limit(limit).lean();
   res.json(await summariesFor(req.user.id, courses));
 });
 
@@ -96,14 +99,14 @@ router.post('/quizzes/:id/attempts', async (req, res) => {
   const percent = Math.round((score / total) * 100);
 
   await QuizAttempt.create({ userId: req.user.id, quizId: quiz._id, answers, score, total, percent });
-  const best = await QuizAttempt.findOne({ userId: req.user.id, quizId: quiz._id }).sort({ percent: -1 }).select('percent').lean();
 
-  // Mengerjakan kuis = lesson kuis selesai, dan tercatat di riwayat.
-  const lesson = course.lessons.find((l) => String(l._id) === String(quiz.lessonId));
-  if (lesson) {
-    await recordView(req.user.id, course, lesson);
-    await completeLesson(req.user.id, course, lesson);
-  }
+  // Mengerjakan kuis = lesson kuis selesai dan tercatat di riwayat; semuanya jalan paralel.
+  const lesson = findLesson(course, quiz.lessonId);
+  const [best] = await Promise.all([
+    QuizAttempt.findOne({ userId: req.user.id, quizId: quiz._id }).sort({ percent: -1 }).select('percent').lean(),
+    lesson && recordHistory(req.user.id, course, lesson),
+    lesson && completeLesson(req.user.id, course, lesson),
+  ]);
 
   res.status(201).json({ score, total, percent, bestPercent: best?.percent ?? percent, review });
 });

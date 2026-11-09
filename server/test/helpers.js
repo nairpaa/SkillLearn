@@ -11,6 +11,7 @@ process.env.APP_ORIGIN = 'http://localhost:5173';
 process.env.APP_URL = 'http://localhost:5173';
 process.env.TRUST_PROXY = 'loopback';
 process.env.PROXY_SHARED_SECRET = 'rahasia-proxy-test';
+process.env.REFRESH_TOKEN_SECRET = 'rahasia-refresh-test';
 
 const v4 = new PublicProtocol(GenerateKeyPairFactory, ExportPublicKeyFactory, ExportSecretKeyFactory);
 const pair = await v4.GenerateKeyPair({ extractable: true });
@@ -43,6 +44,7 @@ export const models = {
   Progress: await load('Progress'),
   QuizAttempt: await load('QuizAttempt'),
   RateLimit: await load('RateLimit'),
+  RetiredToken: await load('RetiredToken'),
 };
 
 await connectDB();

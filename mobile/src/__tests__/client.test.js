@@ -53,6 +53,19 @@ describe('refreshSession', () => {
     expect(hasAccessToken()).toBe(false);
   });
 
+  it('kena rate limit (429) → error dilempar, token TIDAK dihapus, tidak dianggap logout', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(json(429, { error: 'TOO_MANY_ATTEMPTS' }, { 'Retry-After': '60' }));
+    await expect(refreshSession()).rejects.toMatchObject({ status: 429 });
+    expect(tokenStore.clearRefreshToken).not.toHaveBeenCalled();
+    expect(store.token).toBe('rt-lama');
+  });
+
+  it('server error (503) saat bangun → token tetap disimpan', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(json(503, { error: 'DB_UNAVAILABLE' }));
+    await expect(refreshSession()).rejects.toMatchObject({ status: 503 });
+    expect(store.token).toBe('rt-lama');
+  });
+
   it('jaringan putus → error dilempar, token TIDAK dihapus', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new TypeError('Network request failed'));
     await expect(refreshSession()).rejects.toMatchObject({ code: 'ERR_NETWORK' });
@@ -100,4 +113,16 @@ describe('request()', () => {
     expect(err.retryAfter).toBe(900);
     expect(err.caption).toBe('TOO_MANY_ATTEMPTS · POST /api/auth/login');
   });
+
+  it('body yang macet setelah header datang tetap dibatalkan oleh batas waktu', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (url, init) => {
+      const body = new ReadableStream({
+        start(controller) {
+          init.signal.addEventListener('abort', () => controller.error(new DOMException('Aborted', 'AbortError')));
+        },
+      });
+      return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } });
+    });
+    await expect(api.get('/courses')).rejects.toMatchObject({ code: 'ERR_TIMEOUT' });
+  }, 5000);
 });

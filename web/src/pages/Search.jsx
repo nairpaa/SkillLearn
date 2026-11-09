@@ -65,7 +65,7 @@ export default function Search() {
 
   let body;
   if (query.isPending) body = <Skeleton layout="grid" />;
-  else if (query.isError && !query.data) body = <StatusMessage kind="error" error={query.error} onRetry={() => query.refetch()} retrying={query.isFetching} />;
+  else if (query.isError) body = <StatusMessage kind="error" error={query.error} onRetry={() => query.refetch()} retrying={query.isFetching} />;
   else if (results.length === 0)
     body = (
       <EmptyState

@@ -442,4 +442,21 @@ describe('perbaikan hasil review keamanan', () => {
     assert.equal((await request().get('/api/me').set('Authorization', `Bearer ${a.accessToken}`)).status, 401);
     assert.equal((await request().get('/api/me').set('Authorization', `Bearer ${b.accessToken}`)).status, 200);
   });
+
+  it('[review] token yang lebih tua dari 50 rotasi tetap terdeteksi sebagai pencurian', async () => {
+    const { email, user } = await createUser();
+    const first = await login(email);
+    const other = await login(email);
+    let token = first.refreshToken;
+    for (let i = 0; i < 52; i++) {
+      const r = await request().post('/api/auth/refresh').set('X-Client', 'mobile').set('X-Forwarded-For', `198.51.100.${(i % 200) + 1}`).send({ refreshToken: token });
+      assert.equal(r.status, 200, `rotasi ${i + 1}`);
+      token = r.body.refreshToken;
+    }
+    assert.ok(!(await models.Session.exists({ prevHashes: (await import('node:crypto')).createHash('sha256').update(first.refreshToken).digest('hex') })));
+    const replay = await request().post('/api/auth/refresh').set('X-Client', 'mobile').set('User-Agent', 'curl/8').send({ refreshToken: first.refreshToken });
+    assert.equal(replay.status, 401);
+    assert.equal((await request().get('/api/me').set('Authorization', `Bearer ${other.accessToken}`)).status, 401, 'semua sesi dicabut');
+    assert.ok(await models.RetiredToken.countDocuments({ userId: user._id }) >= 52);
+  });
 });

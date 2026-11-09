@@ -13,6 +13,9 @@ import ResetPassword from './pages/ResetPassword';
 import Search from './pages/Search';
 import VerifyEmail from './pages/VerifyEmail';
 import { StatusBlock } from './components/StatusBlock';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { AlertIcon } from './components/Icons';
+import { Button } from './components/ui';
 
 // Halaman yang memuat renderer Markdown / editor dipisah jadi chunk sendiri,
 // jadi bundle awal (login, home, search) tetap ringan.
@@ -30,10 +33,29 @@ function Booting() {
   return <div className="page" aria-busy="true" aria-label="Loading SkillLearn" />;
 }
 
+// Server tidak bisa dihubungi saat aplikasi dibuka (mis. Render sedang bangun dari tidur).
+// Jangan langsung dianggap logout: tampilkan pesan + coba lagi, cookie login tetap dipakai.
+function BootError() {
+  const { retryBoot } = useAuth();
+  return (
+    <div className="page boot-error" role="alert">
+      <div className="sb-message">
+        <div className="icon-tile danger">
+          <AlertIcon size={26} />
+        </div>
+        <h1 className="sb-title">Couldn't reach SkillLearn</h1>
+        <p className="sb-text">The server may be waking up. Check your internet connection and try again.</p>
+        <Button onClick={retryBoot}>Try again</Button>
+      </div>
+    </div>
+  );
+}
+
 function RequireAuth() {
   const { status, expired } = useAuth();
   const location = useLocation();
   if (status === 'unknown') return <Booting />;
+  if (status === 'offline') return <BootError />;
   if (status === 'guest') {
     const from = location.pathname + location.search + location.hash;
     return <Navigate to={expired ? '/login?expired=1' : '/login'} replace state={{ from }} />;
@@ -46,11 +68,12 @@ function GuestOnly() {
   const { status } = useAuth();
   if (status === 'unknown') return <Booting />;
   if (status === 'authed') return <Navigate to="/" replace />;
-  return <Outlet />;
+  return <Outlet />; // 'guest' maupun 'offline': halaman login tetap bisa dipakai
 }
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <Routes>
       <Route element={<GuestOnly />}>
         <Route path="/login" element={<Login />} />
@@ -74,5 +97,6 @@ export default function App() {
         </Route>
       </Route>
     </Routes>
+    </ErrorBoundary>
   );
 }

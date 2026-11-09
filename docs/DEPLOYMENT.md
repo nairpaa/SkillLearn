@@ -41,6 +41,7 @@ Setelah push, tab **Actions** di GitHub menjalankan CI (test server/web/mobile, 
 cd server
 npm run keys                                                          # PASETO_SECRET_KEY, PASETO_PUBLIC_KEY, PASETO_KID
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"   # PROXY_SHARED_SECRET
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"   # REFRESH_TOKEN_SECRET
 ```
 
 Tentukan juga dua password pribadi (minimal 8 karakter + angka, jangan `Belajar123`):
@@ -75,6 +76,7 @@ Hasilnya 8 course (63 lesson), 2 akun demo, dan 1 admin.
 | --- | --- |
 | `MONGODB_URI` | connection string Atlas |
 | `PASETO_SECRET_KEY`, `PASETO_PUBLIC_KEY` | dari `npm run keys` |
+| `REFRESH_TOKEN_SECRET` | dari langkah 3 |
 | `APP_ORIGIN` | sementara `https://example.com`, diganti di langkah 7 |
 | `PROXY_SHARED_SECRET` | dari langkah 3 |
 | `SMTP_URL` atau `RESEND_API_KEY` | lihat bagian Email |

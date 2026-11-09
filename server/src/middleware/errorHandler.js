@@ -17,6 +17,11 @@ export function errorHandler(err, req, res, next) {
   if (err.type === 'entity.too.large') {
     return res.status(413).json({ error: 'PAYLOAD_TOO_LARGE', message: 'Request body is too large (max 100 KB).' });
   }
+  // Error klien lain dari body-parser (charset/encoding tidak didukung, request terputus, dll.)
+  // memang kesalahan request, jadi dibalas 4xx, bukan 500 dan bukan dicatat sebagai error server.
+  if (err.expose && err.status >= 400 && err.status < 500) {
+    return res.status(err.status).json({ error: 'BAD_REQUEST', message: 'The request could not be processed.' });
+  }
   if (err.name === 'CastError' || err.name === 'ValidationError') {
     return res.status(400).json({ error: 'VALIDATION_ERROR', message: 'Check the highlighted fields.' });
   }

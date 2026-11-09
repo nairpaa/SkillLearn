@@ -1,11 +1,17 @@
 // Unit test sanitasi Markdown: konten artikel dari API tidak boleh bisa menjalankan script.
 import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { Markdown } from '../components/Markdown';
 
 afterEach(cleanup);
 
-const renderMd = (md) => render(<Markdown>{md}</Markdown>).container;
+const renderMd = (md) =>
+  render(
+    <MemoryRouter>
+      <Markdown>{md}</Markdown>
+    </MemoryRouter>
+  ).container;
 
 describe('Markdown (XSS)', () => {
   it('HTML mentah tidak dirender sebagai elemen', () => {
@@ -43,5 +49,11 @@ describe('Markdown (XSS)', () => {
     expect(c.querySelector('code.inline-code').textContent).toBe('useState');
     expect(c.textContent).toContain('const a = 1;');
     expect(c.querySelector('.md-tip')).not.toBeNull();
+  });
+
+  it('link internal memakai router (tanpa target _blank, tanpa reload)', () => {
+    const a = renderMd('[lanjut](/courses/react)').querySelector('a');
+    expect(a.getAttribute('href')).toBe('/courses/react');
+    expect(a.getAttribute('target')).toBeNull();
   });
 });

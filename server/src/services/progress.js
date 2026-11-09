@@ -19,6 +19,15 @@ export async function recordView(userId, course, lesson) {
   ]);
 }
 
+// Catat riwayat saja (tanpa menyentuh progres), dipakai saat completeLesson juga dijalankan.
+export function recordHistory(userId, course, lesson) {
+  return History.updateOne(
+    { userId, lessonId: lesson._id },
+    { $set: { courseId: course._id, type: lesson.type, viewedAt: new Date() } },
+    { upsert: true }
+  );
+}
+
 // Tandai lesson selesai. $addToSet membuat pemanggilan berulang tetap aman (idempotent).
 export async function completeLesson(userId, course, lesson) {
   const doc = await Progress.findOneAndUpdate(

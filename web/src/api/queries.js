@@ -154,8 +154,13 @@ export function useToggleFavorite() {
     onError: (_err, _vars, ctx) => {
       ctx?.snapshot?.forEach(([key, data]) => qc.setQueryData(key, data));
     },
+    // Setelah selesai (berhasil/gagal), samakan lagi semua tampilan dengan server, jadi balapan
+    // Save → Undo yang cepat tidak meninggalkan kartu/detail yang statusnya berbeda dengan daftar favorit.
     onSettled: () => {
       qc.invalidateQueries({ queryKey: qk.favorites });
+      qc.invalidateQueries({ queryKey: qk.coursesAll });
+      qc.invalidateQueries({ queryKey: qk.coursesDetailAll });
+      qc.invalidateQueries({ queryKey: qk.me });
     },
   });
 }

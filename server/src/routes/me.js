@@ -18,7 +18,7 @@ import {
   ProgressParams,
   parse,
 } from '../middleware/validate.js';
-import { computeProgress, lessonDuration, summariesFor } from '../services/courses.js';
+import { SUMMARY_PROJECTION, computeProgress, findLesson, lessonDuration, summariesFor, toSummary } from '../services/courses.js';
 import { completeLesson, recordView } from '../services/progress.js';
 import { HttpError, notFound } from '../services/http.js';
 import { verifyPassword } from '../auth/password.js';
@@ -28,8 +28,6 @@ import { DEMO_LOCKED } from './auth.js';
 // Semua route di sini sudah melewati requireAuth. Setiap query SELALU memakai
 // userId dari token (req.user.id), tidak pernah dari input klien. Itu inti anti-IDOR.
 const router = Router();
-
-const findLesson = (course, lessonId) => course.lessons.find((l) => String(l._id) === lessonId);
 
 async function publishedCourse(courseId) {
   const course = await Course.findOne({ _id: courseId, published: true }).lean();
@@ -50,7 +48,9 @@ async function buildProfile(user) {
   const courses = await Course.find({
     _id: mongoose.trusted({ $in: progressDocs.map((p) => p.courseId) }),
     published: true,
-  }).lean();
+  })
+    .select(SUMMARY_PROJECTION)
+    .lean();
   const courseById = new Map(courses.map((c) => [String(c._id), c]));
 
   let inProgress = 0;
@@ -67,7 +67,12 @@ async function buildProfile(user) {
     // progressDocs sudah urut "terakhir dibuka", jadi yang pertama belum selesai = lanjutkan belajar.
     if (!continueLearning && progress < 100) {
       const lesson = course.lessons[currentLessonIndex];
-      const [summary] = await summariesFor(user._id, [course]);
+      // Progres course ini sudah ada di tangan; cukup satu cek favorit, tanpa query ulang.
+      const isFav = await Favorite.exists({ userId: user._id, courseId: course._id });
+      const summary = toSummary(course, {
+        favoriteIds: new Set(isFav ? [String(course._id)] : []),
+        progressById: new Map([[String(course._id), doc]]),
+      });
       continueLearning = {
         course: summary,
         progress,
@@ -150,7 +155,9 @@ router.get('/favorites', async (req, res) => {
   const courses = await Course.find({
     _id: mongoose.trusted({ $in: favorites.map((f) => f.courseId) }),
     published: true,
-  }).lean();
+  })
+    .select(SUMMARY_PROJECTION)
+    .lean();
   // $in tidak menjaga urutan, jadi diurutkan ulang sesuai waktu disimpan.
   const byId = new Map(courses.map((c) => [String(c._id), c]));
   const ordered = favorites.map((f) => byId.get(String(f.courseId))).filter(Boolean);
@@ -178,7 +185,9 @@ router.get('/history', async (req, res) => {
   const courses = await Course.find({
     _id: mongoose.trusted({ $in: [...new Set(items.map((h) => String(h.courseId)))] }),
     published: true,
-  }).lean();
+  })
+    .select(SUMMARY_PROJECTION)
+    .lean();
   const byId = new Map(courses.map((c) => [String(c._id), c]));
 
   const result = [];

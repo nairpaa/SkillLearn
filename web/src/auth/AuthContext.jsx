@@ -1,19 +1,23 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
-import { onSessionExpired, post, refreshAccessToken, setAccessToken } from '../api/client';
+import { ApiError, onSessionExpired, post, refreshAccessToken, setAccessToken } from '../api/client';
 import { fetchMe, qk } from '../api/queries';
 
 const AuthContext = createContext(null);
 
 // Boot dibuat sekali per page load. StrictMode menjalankan effect dua kali di dev,
 // dan kita nggak mau ada dua POST /auth/refresh (refresh token-nya sekali pakai).
+// Hasil: { me } kalau sesi masih ada, { guest: true } kalau memang belum/tidak login,
+// { offline: true } kalau server tidak bisa dihubungi (jaringan putus, server bangun dari tidur, 5xx).
 let bootPromise = null;
+const isOutage = (err) => !(err instanceof ApiError) || err.isNetwork || err.status >= 500;
 function bootSession() {
   if (!bootPromise) {
     bootPromise = refreshAccessToken()
       .then(() => fetchMe())
-      .catch(() => null);
+      .then((me) => ({ me }))
+      .catch((err) => (isOutage(err) ? { offline: true } : { guest: true }));
   }
   return bootPromise;
 }
@@ -36,21 +40,31 @@ export function AuthProvider({ children }) {
     [qc]
   );
 
-  useEffect(() => {
-    let alive = true;
-    bootSession().then((me) => {
-      if (!alive) return;
-      if (me) {
-        qc.setQueryData(qk.me, me);
+  const applyBoot = useCallback(
+    (res) => {
+      if (res.me) {
+        qc.setQueryData(qk.me, res.me);
         setStatus('authed');
       } else {
-        setStatus('guest');
+        setStatus(res.offline ? 'offline' : 'guest');
       }
-    });
+    },
+    [qc]
+  );
+
+  useEffect(() => {
+    let alive = true;
+    bootSession().then((res) => alive && applyBoot(res));
     return () => {
       alive = false;
     };
-  }, [qc]);
+  }, [applyBoot]);
+
+  const retryBoot = useCallback(() => {
+    bootPromise = null;
+    setStatus('unknown');
+    bootSession().then(applyBoot);
+  }, [applyBoot]);
 
   useEffect(() => {
     // redirect-nya diurus RequireAuth (satu pintu), di sini cukup tandai sesinya habis
@@ -75,8 +89,11 @@ export function AuthProvider({ children }) {
     async ({ allDevices = false } = {}) => {
       try {
         await post('/auth/logout', allDevices ? { allDevices: true } : {});
-      } catch {
-        // kalau server gagal pun, sesi lokal tetap dibersihkan
+      } catch (err) {
+        // Sesi sudah tidak berlaku di server (401) → cukup bersihkan lokal.
+        // Gagal karena jaringan/server: JANGAN pura-pura sudah logout, karena cookie login di browser
+        // masih berlaku dan orang berikutnya di komputer yang sama bisa masuk sebagai kamu.
+        if (!(err instanceof ApiError && err.status === 401)) throw err;
       }
       clearSession();
       navigate('/login', { replace: true });
@@ -85,8 +102,8 @@ export function AuthProvider({ children }) {
   );
 
   const value = useMemo(
-    () => ({ status, expired: reason === 'expired', login, logout, clearSession }),
-    [status, reason, login, logout, clearSession]
+    () => ({ status, expired: reason === 'expired', login, logout, clearSession, retryBoot }),
+    [status, reason, login, logout, clearSession, retryBoot]
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

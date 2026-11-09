@@ -80,9 +80,16 @@ export default function Profile() {
     { v: s.quizAverage == null ? '–' : `${Math.round(s.quizAverage)}%`, k: 'Quiz average' },
   ];
 
+  const [logoutErr, setLogoutErr] = useState('');
   const doLogout = async () => {
     setLeaving(true);
-    await logout({ allDevices });
+    setLogoutErr('');
+    try {
+      await logout({ allDevices });
+    } catch {
+      setLeaving(false);
+      setLogoutErr("Couldn't log out. Check your internet connection and try again.");
+    }
   };
 
   return (
@@ -199,6 +206,11 @@ export default function Profile() {
           </>
         }
       >
+        {logoutErr && (
+          <p className="dialog-error" role="alert">
+            {logoutErr}
+          </p>
+        )}
         <p>Your progress and favorites stay saved to your account. You'll need to log in again to keep learning.</p>
         <label className="check dialog-check">
           <span className="check-wrap">

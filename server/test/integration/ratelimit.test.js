@@ -169,5 +169,13 @@ describe('perbaikan hasil review keamanan', () => {
     spy.mock.restore();
     assert.equal(lines.filter((l) => l.includes('"login_locked"')).length, 1);
   });
-});
 
+  it('[review] memori lockout 24 jam baru dimulai saat terkunci, bukan saat percobaan pertama', async () => {
+    const { email } = await createUser();
+    const ip = nextIp();
+    assert.equal((await tryLogin(email, PASSWORD, ip)).status, 200);
+    const doc = await models.RateLimit.collection.findOne({ _id: `login:${ip}:${email}` });
+    assert.equal(doc.lockoutsResetAt, null);
+    assert.ok(doc.expireAt instanceof Date, 'dokumen tetap punya TTL');
+  });
+});

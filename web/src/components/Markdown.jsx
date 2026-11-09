@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown';
+import { Link } from 'react-router';
 import rehypeSanitize from 'rehype-sanitize';
 import { CodeBlock } from './CodeBlock';
 
@@ -10,6 +11,8 @@ function hastText(node) {
 }
 
 const isExternal = (href = '') => /^https?:\/\//i.test(href);
+// Link internal (/courses/…) lewat router: tidak memuat ulang halaman, jadi sesi & cache tetap utuh.
+const isInternal = (href = '') => href.startsWith('/') && !href.startsWith('//');
 
 const components = {
   // Code block fenced → CodeBlock dengan highlight + tombol Copy
@@ -34,13 +37,15 @@ const components = {
     return <blockquote className="md-quote">{children}</blockquote>;
   },
   a({ href, children }) {
-    return isExternal(href) ? (
-      <a href={href} target="_blank" rel="noopener noreferrer">
-        {children}
-      </a>
-    ) : (
-      <a href={href}>{children}</a>
-    );
+    if (isExternal(href)) {
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer">
+          {children}
+        </a>
+      );
+    }
+    if (isInternal(href)) return <Link to={href}>{children}</Link>;
+    return <a href={href}>{children}</a>;
   },
   // judul lesson sudah h1, jadi heading markdown level 1 diturunkan jadi h2
   h1: ({ children }) => <h2>{children}</h2>,

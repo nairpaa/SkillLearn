@@ -61,6 +61,29 @@ async function send(path, { method = 'GET', body, headers = {}, auth = true, tim
       signal: controller.signal,
     });
   } catch (e) {
+    clearTimeout(timer);
+    const timedOut = e?.name === 'AbortError';
+    throw new ApiError({
+      status: 0,
+      code: timedOut ? 'ERR_TIMEOUT' : 'ERR_NETWORK',
+      message: timedOut ? 'The server took too long to respond.' : 'Network request failed',
+      method,
+      path,
+    });
+  }
+
+  // Timer batas waktu baru dihapus SETELAH body selesai dibaca: kalau header sudah datang tapi body macet
+  // (server bangun dari tidur, sinyal lemah), request tetap dibatalkan dan tidak menggantung selamanya.
+  if (res.status === 204) {
+    clearTimeout(timer);
+    return null;
+  }
+
+  let data = null;
+  let text = '';
+  try {
+    text = await res.text();
+  } catch (e) {
     const timedOut = e?.name === 'AbortError';
     throw new ApiError({
       status: 0,
@@ -72,11 +95,6 @@ async function send(path, { method = 'GET', body, headers = {}, auth = true, tim
   } finally {
     clearTimeout(timer);
   }
-
-  if (res.status === 204) return null;
-
-  let data = null;
-  const text = await res.text().catch(() => '');
   if (text) {
     try {
       data = JSON.parse(text);
@@ -118,9 +136,9 @@ export function refreshSession() {
         if (data?.refreshToken) await setRefreshToken(data.refreshToken);
         return !!accessToken;
       } catch (e) {
-        // Error jaringan jangan dianggap logout, token masih bisa dipakai nanti
-        if (e instanceof ApiError && e.isNetwork) throw e;
-        if (e instanceof ApiError && e.status >= 500) throw e;
+        // Hanya penolakan token (401 sesi tidak berlaku / 400 token rusak) yang berarti harus login ulang.
+        // Error lain (jaringan, 429 rate limit, 5xx server bangun) = coba lagi nanti; token tetap disimpan.
+        if (!(e instanceof ApiError) || (e.status !== 401 && e.status !== 400)) throw e;
         accessToken = null;
         await clearRefreshToken();
         return false;

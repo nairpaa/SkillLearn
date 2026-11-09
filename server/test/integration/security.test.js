@@ -162,5 +162,14 @@ describe('[#1] IP klien dari proxy web', () => {
     // Pengunjung lain lewat proxy yang sama tidak ikut terkunci.
     assert.equal((await via('198.51.100.51').send({ email, password: 'Rahasia99x' })).status, 200);
   });
-});
 
+  it('[review] body dengan charset tidak didukung → 415, bukan 500', async () => {
+    const res = await request().post('/api/auth/login').set('Content-Type', 'application/json; charset=latin1').send('{"email":"a@b.co","password":"x"}');
+    assert.equal(res.status, 415);
+    assert.equal(res.body.error, 'BAD_REQUEST');
+  });
+
+  it('[review] endpoint tak dikenal tanpa token → 401 (materi tidak bocor ke anonim)', async () => {
+    assert.equal((await request().get('/api/lessons/apa-saja')).status, 401);
+  });
+});

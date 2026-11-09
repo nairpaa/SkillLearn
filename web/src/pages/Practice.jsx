@@ -59,6 +59,13 @@ export default function Practice({ course, lesson }) {
       setBanner({ kind: 'info', text: `Finish all ${tasks.length} tasks before submitting.` });
       return;
     }
+    // Centang task saja tidak cukup: kode harus lolos semua pengecekan otomatis.
+    const latest = runChecks(code, checks);
+    setResults(latest);
+    if (latest.some((r) => !r.pass)) {
+      setBanner({ kind: 'info', text: `Run your code and make all ${latest.length} checks pass before submitting.` });
+      return;
+    }
     complete.mutate(
       { courseId: course.id, lessonId: lesson.id, slug: course.slug },
       {

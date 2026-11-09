@@ -10,12 +10,8 @@ export function useFavoriteToggle() {
 
   const run = useCallback(
     (course, save, { withUndo = true } = {}) => {
-      mutation.mutate(
-        { course, save },
-        {
-          onError: () => toast.show("Couldn't update favorites. Try again."),
-        }
-      );
+      // mutateAsync: tiap klik punya promise sendiri, jadi pesan error tidak hilang walau langsung di-Undo.
+      mutation.mutateAsync({ course, save }).catch(() => toast.show("Couldn't update favorites. Try again."));
       if (!withUndo) return;
       toast.show(save ? 'Saved to favorites' : 'Removed from favorites', {
         actionLabel: 'Undo',

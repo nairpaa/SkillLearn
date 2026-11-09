@@ -11,7 +11,7 @@ import { useStatusBar } from '../hooks/useStatusBar';
 import { categoryColors, colors, fonts, radius } from '../theme';
 import { shortTitle } from '../utils/format';
 import { openLesson } from '../utils/lessons';
-import { goHome } from '../utils/nav';
+import { goBackOr, goHome } from '../utils/nav';
 
 // M08 Lesson: Article
 export default function ArticleScreen({ navigation, route }) {
@@ -82,9 +82,9 @@ export default function ArticleScreen({ navigation, route }) {
   const onNext = () => {
     markDone();
     if (next) openLesson(navigation, course, next, 'replace');
-    else navigation.goBack();
+    else goBackOr(navigation);
   };
-  const onPrev = () => (prev ? openLesson(navigation, course, prev, 'replace') : navigation.goBack());
+  const onPrev = () => (prev ? openLesson(navigation, course, prev, 'replace') : goBackOr(navigation));
 
   return (
     <View style={styles.root}>

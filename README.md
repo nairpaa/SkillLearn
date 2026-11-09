@@ -100,10 +100,10 @@ EAS_NO_VCS=1 npx eas-cli@latest build -p android --profile preview
 ## Testing
 
 ```bash
-cd server && npm test              # 136 test unit + integrasi (MongoDB in-memory, tanpa Docker)
+cd server && npm test              # 140 test unit + integrasi (MongoDB in-memory, tanpa Docker)
 cd server && npm run test:security # 9 uji keamanan bagian 6 dokumen arsitektur (server harus jalan)
-cd web && npm test                 # 30 test
-cd mobile && npm test              # 18 test
+cd web && npm test                 # 31 test
+cd mobile && npm test              # 21 test
 ```
 
 GitHub Actions (`.github/workflows/ci.yml`) menjalankan test, build, export bundle Android, dan `npm audit` di setiap push.
